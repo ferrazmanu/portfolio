@@ -54,7 +54,9 @@ export function Contact({ reference }: SectionProps) {
                 return (
                   <li key={data.name}>
                     <h4>{data.name}</h4>
-                    <Link href={data.link}>{data.link}</Link>
+                    <Link href={data.link} target="_blank">
+                      {data.link}
+                    </Link>
                   </li>
                 );
               })}
