@@ -7,6 +7,7 @@ import { Career } from "@/components/Sections/Career";
 import { useRef } from "react";
 import { Contact } from "@/components/Sections/Contact";
 import { TranslationButton } from "@/components/TranslationButton";
+import { FloatingCat } from "@/components/FloatingCat";
 
 export default function Home() {
   const presentationRef = useRef();
@@ -23,6 +24,7 @@ export default function Home() {
 
   return (
     <>
+      <FloatingCat />
       <TranslationButton />
       <Header />
       <main>

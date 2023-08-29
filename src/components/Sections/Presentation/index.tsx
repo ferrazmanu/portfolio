@@ -40,9 +40,9 @@ export function Presentation({
               </p>
               <p>
                 {Translate({
-                  text: `Sou Desenvolvedora front há 2 anos e trabalho com React,
+                  text: `Sou Desenvolvedora front-end há 2 anos e trabalho com React,
                   Typescript e Nextjs.`,
-                  translation: `I've been a front developer for 2 years and I work with React,
+                  translation: `I've been a front-end developer for 2 years and I work with React,
                   Typescript and Nextjs.`,
                 })}
               </p>

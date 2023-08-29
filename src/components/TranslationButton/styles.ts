@@ -11,6 +11,7 @@ export const ButtonWrapper = styled.div`
     height: 36px;
     border: 1px solid #fff;
     border-radius: 20px;
+    background-color: #111;
   }
 
   .checkbox {
@@ -52,7 +53,7 @@ export const ButtonWrapper = styled.div`
       text-align: center;
       line-height: 1;
       padding: 9px 4px;
-      background-color: #000;
+      background-color: #363636;
       border-radius: 50%;
       transition: 0.3s cubic-bezier(0.18, 0.89, 0.35, 1.15) all;
     }
@@ -63,5 +64,10 @@ export const ButtonWrapper = styled.div`
     background-color: #ebf7fc;
     transition: 0.3s ease all;
     z-index: 1;
+  }
+
+  @media only screen and (max-width: 375px) {
+    right: 10px;
+    left: unset;
   }
 `;
