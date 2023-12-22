@@ -34,24 +34,22 @@ export function Presentation({
                 {Translate({
                   text: `Olá, sou Manuela Ferraz (ela/dela), tenho 26 anos. Brasileira, carioca
                   morando em Londrina/PR.`,
-                  translation: `Hello, I'm Manuela Ferraz (she/her), I'm 26 years old. brazilian, carioca
+                  translation: `Hello, I'm Manuela Ferraz (she/her), I'm 26 years old. Brazilian, carioca
                   living in Londrina/PR.`,
                 })}
               </p>
               <p>
                 {Translate({
-                  text: `Sou Desenvolvedora front-end há 2 anos e trabalho com React,
-                  Typescript e Nextjs.`,
-                  translation: `I've been a front-end developer for 2 years and I work with React,
-                  Typescript and Nextjs.`,
+                  text: `Sou Desenvolvedora front-end com ensino superior em Desenvolvimento Web. Utilizo ReactJS, Typescript e NextJS para desenvolvimento de websites e sistemas para web de maneira responsiva, dinâmica e fluida.`,
+                  translation: `I'm a front-end developer with a bachelor's degree in Web Development. I use ReactJS, Typescript and NextJS to develop websites and web systems in a responsive, dynamic and fluid way.`,
                 })}
               </p>
               <p>
                 {Translate({
-                  text: `Apaixonada por programação, sempre busco desafios em que vão me
+                  text: `Apaixonada por programação, sempre busco desafios que vão me
                   trazer novas experiências e grandes aprendizados.`,
                   translation: `Passionate about programming, I'm always looking for challenges that will
-                  bring new experiences and great learning.`,
+                  bring me new experiences and great learning.`,
                 })}
               </p>
               <p style={{ textDecoration: "underline" }}>

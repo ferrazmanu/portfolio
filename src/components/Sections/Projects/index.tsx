@@ -49,7 +49,7 @@ export function Projects({ reference, scrollTo, nextSection }: SectionProps) {
       imageUrl: IsabellaImage,
     },
     {
-      name: "Dunegon Tools",
+      name: "Dungeon Tools",
       link: "https://dungeon-tools.vercel.app/",
       github: "https://github.com/ferrazmanu/dungeon-tools",
       imageUrl: DungeonTools,
