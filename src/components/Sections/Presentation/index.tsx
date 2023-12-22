@@ -32,9 +32,9 @@ export function Presentation({
             <div className="presentation">
               <p>
                 {Translate({
-                  text: `Olá, sou Manuela Ferraz, tenho 26 anos. Brasileira, carioca
+                  text: `Olá, sou Manuela Ferraz (ela/dela), tenho 26 anos. Brasileira, carioca
                   morando em Londrina/PR.`,
-                  translation: `Hello, I'm Manuela Ferraz, I'm 26 years old. brazilian, carioca
+                  translation: `Hello, I'm Manuela Ferraz (she/her), I'm 26 years old. brazilian, carioca
                   living in Londrina/PR.`,
                 })}
               </p>

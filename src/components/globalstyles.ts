@@ -52,7 +52,22 @@ export const GlobalStyles = createGlobalStyle`
     }
   }
 
+  
+  ::-webkit-scrollbar-track {
+    border-radius: 10px;
+    background-color: #222;
+  }
 
+  ::-webkit-scrollbar {
+    width: 4px;
+    border-radius: 10px;
+    background-color: #222;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: #000;
+  }
 
   @media only screen and (max-width: 375px) {
     body{

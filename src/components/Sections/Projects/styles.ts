@@ -5,8 +5,16 @@ export const ProjectsWrapper = styled(Wrapper)`
   .projects-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(353px, 1fr));
+
+    grid-template-rows: auto auto;
+    grid-auto-flow: column;
+    overflow-x: auto;
+    overflow-y: hidden;
+
     grid-row-gap: 30px;
     grid-column-gap: 16px;
+
+    padding-bottom: 16px;
   }
 
   .box {
@@ -14,15 +22,22 @@ export const ProjectsWrapper = styled(Wrapper)`
     flex-direction: column;
     gap: 20px;
     height: inherit;
+    width: 100%;
+    min-width: 353px;
+    white-space: nowrap;
 
     .image {
       position: relative;
       width: inherit;
       height: 260px;
+      border: 1px solid #000;
+      border-radius: 5px;
+      padding: 5px;
 
       img {
-        width: inherit;
         object-fit: cover;
+        border-radius: 5px;
+        padding: 5px;
       }
     }
 

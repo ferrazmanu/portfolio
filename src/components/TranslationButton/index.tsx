@@ -2,7 +2,6 @@ import { selectLangState, setLanguage } from "@/store/langSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 import * as S from "./styles";
-import { useEffect } from "react";
 
 export const TranslationButton = () => {
   const language = useSelector(selectLangState);

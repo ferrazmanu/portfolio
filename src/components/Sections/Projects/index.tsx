@@ -11,6 +11,8 @@ import CatPalaceImage from "assets/images/www.catpalace.store.png";
 import PetLoveImage from "assets/images/pet-love-eta.vercel.app.png";
 import ActivitiesImage from "assets/images/80-activities.vercel.app.png";
 import IsabellaImage from "assets/images/isabella-matokanovich.vercel.app.png";
+import DungeonTools from "assets/images/dungeon-tools.vercel.app.png";
+
 import { Arrow } from "@/assets/svgs/arrow";
 
 import { SectionProps } from "@/types";
@@ -45,6 +47,12 @@ export function Projects({ reference, scrollTo, nextSection }: SectionProps) {
       link: "https://isabella-matokanovich.vercel.app/",
       github: "https://github.com/ferrazmanu/isabella-matokanovich",
       imageUrl: IsabellaImage,
+    },
+    {
+      name: "Dunegon Tools",
+      link: "https://dungeon-tools.vercel.app/",
+      github: "https://github.com/ferrazmanu/dungeon-tools",
+      imageUrl: DungeonTools,
     },
   ];
 
