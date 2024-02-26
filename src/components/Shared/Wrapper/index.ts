@@ -1,7 +1,7 @@
 import { styled } from "styled-components";
 
 export const Wrapper = styled.section`
-  height: 100vh;
+  height: 100dvh;
   scroll-snap-align: center;
   padding: 20px 0;
 
@@ -23,6 +23,7 @@ export const Wrapper = styled.section`
     flex-direction: column;
     gap: 3vh;
     height: 100%;
+    min-height: inherit;
   }
 
   @media only screen and (max-width: 375px) {
@@ -46,5 +47,6 @@ export const MainContent = styled.section`
 
   @media only screen and (max-width: 375px) {
     padding: 0;
+    min-height: 40dvh;
   }
 `;

@@ -2,6 +2,15 @@ import { Wrapper } from "@/components/Shared/Wrapper";
 import { styled } from "styled-components";
 
 export const ProjectsWrapper = styled(Wrapper)`
+
+  .swiper-pagination-bullet-active{
+    background: white;
+  }
+
+  .swiper-pagination-bullet{
+    background: #898989;
+  }
+
   .projects-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(353px, 1fr));
@@ -29,7 +38,7 @@ export const ProjectsWrapper = styled(Wrapper)`
     .image {
       position: relative;
       width: inherit;
-      height: 260px;
+      height: 53dvh;
       border: 1px solid #000;
       border-radius: 5px;
       padding: 5px;
@@ -78,6 +87,7 @@ export const ProjectsWrapper = styled(Wrapper)`
   .swiper {
     width: 100%;
     height: inherit;
+    min-height: inherit;
   }
 
   @media only screen and (max-width: 992px) {

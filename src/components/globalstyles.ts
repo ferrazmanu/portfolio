@@ -40,7 +40,7 @@ export const GlobalStyles = createGlobalStyle`
     overflow-y: auto;
     overscroll-behavior-y: contain;
     scroll-snap-type: y mandatory;
-    height: 100vh;
+    height: 100dvh;
     width: 100%;
     -ms-overflow-style: none;
     scrollbar-width: none;

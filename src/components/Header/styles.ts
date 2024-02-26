@@ -5,7 +5,7 @@ export const HeaderWrapper = styled.header`
   top: 0;
   right: 0;
   z-index: 10;
-  height: 100vh;
+  height: 100dvh;
   transform: translateX(calc(100% - 61px));
   transition: ease-in-out 0.3s;
   background-color: #000;
