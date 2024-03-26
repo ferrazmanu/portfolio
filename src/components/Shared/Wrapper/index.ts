@@ -26,7 +26,7 @@ export const Wrapper = styled.section`
     min-height: inherit;
   }
 
-  @media only screen and (max-width: 375px) {
+  @media only screen and (max-width: 768px) {
     height: auto;
     scroll-snap-align: initial;
   }
@@ -45,7 +45,7 @@ export const MainContent = styled.section`
     padding: 30px 0;
   }
 
-  @media only screen and (max-width: 375px) {
+  @media only screen and (max-width: 768px) {
     padding: 0;
     min-height: 40dvh;
   }

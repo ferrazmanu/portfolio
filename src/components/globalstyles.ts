@@ -69,7 +69,7 @@ export const GlobalStyles = createGlobalStyle`
     background-color: #000;
   }
 
-  @media only screen and (max-width: 375px) {
+  @media only screen and (max-width: 768px) {
     body{
       overflow: auto;
     }

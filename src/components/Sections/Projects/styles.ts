@@ -2,12 +2,11 @@ import { Wrapper } from "@/components/Shared/Wrapper";
 import { styled } from "styled-components";
 
 export const ProjectsWrapper = styled(Wrapper)`
-
-  .swiper-pagination-bullet-active{
+  .swiper-pagination-bullet-active {
     background: white;
   }
 
-  .swiper-pagination-bullet{
+  .swiper-pagination-bullet {
     background: #898989;
   }
 
@@ -108,7 +107,7 @@ export const ProjectsWrapper = styled(Wrapper)`
     }
   }
 
-  @media only screen and (max-width: 375px) {
+  @media only screen and (max-width: 768px) {
     .box {
       .image {
         height: auto;

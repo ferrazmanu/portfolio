@@ -35,7 +35,7 @@ export const PresentationWrapper = styled(Wrapper)`
     }
   }
 
-  @media only screen and (max-width: 375px) {
+  @media only screen and (max-width: 768px) {
     .title {
       h1,
       h2 {

@@ -66,7 +66,7 @@ export const ButtonWrapper = styled.div`
     z-index: 1;
   }
 
-  @media only screen and (max-width: 375px) {
+  @media only screen and (max-width: 768px) {
     right: 10px;
     left: unset;
   }

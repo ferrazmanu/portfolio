@@ -29,7 +29,7 @@ export const CareerWrapper = styled(Wrapper)`
     }
   }
 
-  @media only screen and (max-width: 375px) {
+  @media only screen and (max-width: 768px) {
     ul {
       font-size: 18px;
 
