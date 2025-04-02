@@ -2,6 +2,7 @@ import { styled } from "styled-components";
 
 export const Wrapper = styled.section`
   height: 100dvh;
+  min-height: min-content;
   scroll-snap-align: center;
   padding: 20px 0;
 
