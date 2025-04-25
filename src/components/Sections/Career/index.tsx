@@ -7,9 +7,13 @@ import { Arrow } from "@/assets/svgs/arrow";
 import { SectionProps } from "@/types";
 
 import { Translate } from "@/hooks/translate";
+import useInView from "@/hooks/useInView";
+import { LegacyRef } from "react";
 import * as S from "./styles";
 
 export function Career({ reference, scrollTo, nextSection }: SectionProps) {
+  const [ref, isInView] = useInView({ threshold: 0.1 });
+
   const careerData = [
     {
       companyName: "TheSoilCompany",
@@ -49,7 +53,10 @@ export function Career({ reference, scrollTo, nextSection }: SectionProps) {
   return (
     <S.CareerWrapper id="career" ref={reference}>
       <Container>
-        <MainContent>
+        <MainContent
+          ref={ref as LegacyRef<HTMLElement>}
+          className={`fadeInSection ${isInView ? "visible" : ""}`}
+        >
           <div className="wrapper">
             <SectionTitle>
               {Translate({

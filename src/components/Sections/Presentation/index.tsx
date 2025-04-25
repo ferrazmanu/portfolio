@@ -7,6 +7,8 @@ import { Arrow } from "@/assets/svgs/arrow";
 
 import { SectionProps } from "@/types";
 
+import useInView from "@/hooks/useInView";
+import { LegacyRef } from "react";
 import * as S from "./styled";
 
 export function Presentation({
@@ -14,10 +16,15 @@ export function Presentation({
   scrollTo,
   nextSection,
 }: SectionProps) {
+  const [ref, isInView] = useInView({ threshold: 0.1 });
+
   return (
     <S.PresentationWrapper id="presentation" ref={reference}>
       <Container>
-        <MainContent>
+        <MainContent
+          ref={ref as LegacyRef<HTMLElement>}
+          className={`fadeInSection ${isInView ? "visible" : ""}`}
+        >
           <div className="wrapper">
             <div className="title">
               <h1> Manuela Ferraz, </h1>

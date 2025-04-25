@@ -1,19 +1,26 @@
-import { SectionTitle } from "@/components/Shared/SectionTitle";
 import { Container } from "@/components/Shared/Container";
+import { SectionTitle } from "@/components/Shared/SectionTitle";
 import { MainContent } from "@/components/Shared/Wrapper";
 
 import { Arrow } from "@/assets/svgs/arrow";
 
 import { SectionProps } from "@/types";
 
-import * as S from "./styles";
 import { Translate } from "@/hooks/translate";
+import useInView from "@/hooks/useInView";
+import { LegacyRef } from "react";
+import * as S from "./styles";
 
 export function Datasheet({ reference, scrollTo, nextSection }: SectionProps) {
+  const [ref, isInView] = useInView({ threshold: 0.1 });
+
   return (
     <S.DatasheetWrapper id="datasheet" ref={reference}>
       <Container>
-        <MainContent>
+        <MainContent
+          ref={ref as LegacyRef<HTMLElement>}
+          className={`fadeInSection ${isInView ? "visible" : ""}`}
+        >
           <div className="wrapper">
             <SectionTitle>
               {Translate({
@@ -73,8 +80,8 @@ export function Datasheet({ reference, scrollTo, nextSection }: SectionProps) {
               <li>
                 <span>Hobbies: </span>
                 {Translate({
-                  text: `Valorant, League of Legends, RPG, LEITURA!`,
-                  translation: `Valorant, League of Legends, RPG, READING!`,
+                  text: `Jogos online, RPG de mesa, música e leitura!`,
+                  translation: `Online games, tabletop RPG, music and reading!`,
                 })}
               </li>
             </ul>

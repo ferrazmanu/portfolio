@@ -80,4 +80,26 @@ export const GlobalStyles = createGlobalStyle`
       height: auto;
      }
     }
+
+    .fadeInSection {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1s ease-out, transform 1s ease-out;
+      will-change: opacity, transform;
+    }
+
+    .visible {
+      animation: fadeInLeft 1s ease-out forwards;
+    }
+
+    @keyframes fadeInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
 `;

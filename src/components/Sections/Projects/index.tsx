@@ -1,29 +1,33 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from 'swiper/modules';
 
-import { SectionTitle } from "@/components/Shared/SectionTitle";
 import { Container } from "@/components/Shared/Container";
+import { SectionTitle } from "@/components/Shared/SectionTitle";
 import { MainContent } from "@/components/Shared/Wrapper";
 
-import CatPalaceImage from "assets/images/www.catpalace.store.png";
-import PetLoveImage from "assets/images/pet-love-eta.vercel.app.png";
 import ActivitiesImage from "assets/images/80-activities.vercel.app.png";
-import IsabellaImage from "assets/images/isabella-matokanovich.vercel.app.png";
 import DungeonToolsImage from "assets/images/dungeon-tools.vercel.app.png";
+import IsabellaImage from "assets/images/isabella-matokanovich.vercel.app.png";
 import MarvelAppImage from "assets/images/marvel-app-pl.vercel.app.png";
+import PetLoveImage from "assets/images/pet-love-eta.vercel.app.png";
+import CatPalaceImage from "assets/images/www.catpalace.store.png";
 
 import { Arrow } from "@/assets/svgs/arrow";
 import { Translate } from "@/hooks/translate";
 import { SectionProps } from "@/types";
 
-import * as S from "./styles";
+import useInView from "@/hooks/useInView";
+import { LegacyRef } from "react";
 import "swiper/css";
-import 'swiper/css/pagination';
+import "swiper/css/pagination";
+import * as S from "./styles";
 
 export function Projects({ reference, scrollTo, nextSection }: SectionProps) {
+  const [ref, isInView] = useInView({ threshold: 0.1 });
+
   const projectsData = [
     {
       name: "CatPalace",
@@ -66,7 +70,10 @@ export function Projects({ reference, scrollTo, nextSection }: SectionProps) {
   return (
     <S.ProjectsWrapper id="projects" ref={reference}>
       <Container>
-        <MainContent>
+        <MainContent
+          ref={ref as LegacyRef<HTMLElement>}
+          className={`fadeInSection ${isInView ? "visible" : ""}`}
+        >
           <div className="wrapper">
             <SectionTitle>
               {Translate({
@@ -75,7 +82,12 @@ export function Projects({ reference, scrollTo, nextSection }: SectionProps) {
               })}
             </SectionTitle>
 
-            <Swiper spaceBetween={15} slidesPerView={1} pagination={true} modules={[Pagination]}>
+            <Swiper
+              spaceBetween={15}
+              slidesPerView={1}
+              pagination={true}
+              modules={[Pagination]}
+            >
               {projectsData.map((project) => {
                 return (
                   <SwiperSlide key={project.name}>
