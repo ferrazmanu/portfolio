@@ -31,7 +31,7 @@ export function Projects({ reference, scrollTo, nextSection }: SectionProps) {
   const projectsData = [
     {
       name: "CatPalace",
-      link: "https://www.catpalace.store/",
+      link: "https://cat-palace-ferrazmanu.vercel.app/",
       github: "https://github.com/ferrazmanu/CatPalace",
       imageUrl: CatPalaceImage,
     },
