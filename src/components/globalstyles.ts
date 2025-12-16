@@ -7,47 +7,61 @@ export const GlobalStyles = createGlobalStyle`
     margin: 0;
   }
 
+  html, body {
+    scroll-behavior: smooth;
+  }
+
   body {
-    color: #fff;
-    background-color: #111;
+    color: #e6f1eb;
+    background: linear-gradient(
+      180deg,
+      #0f1915 0%,
+      #0b0f0d 100%
+    );
     font-family: 'Rajdhani', sans-serif;
     font-weight: 400;
+    min-height: 100vh;
   }
 
   a {
     color: inherit;
     text-decoration: none;
   }
-  
-  ul, li{
+
+  ul, li {
     list-style: none;
   }
 
-  html, body{
-    scroll-behavior: smooth;
-  }
-
-  a, p, li{
+  a, p, li {
     font-weight: 300;
   }
 
   h1 {
     font-size: 72px;
     font-weight: 700;
+    color: #f0f7f3;
+    letter-spacing: -1px;
   }
 
   h2 {
     font-size: 32px;
     font-weight: 300;
-    opacity: 0.8;
+    opacity: 0.85;
+    color: #d3e6dc;
+  }
+
+  h3 {
+    font-weight: 600;
+    color: #eaf5ef;
   }
 
   p {
     font-size: 20px;
     line-height: 1.6;
+    color: #cfe0d8;
   }
 
-  main{
+  main {
     display: flex;
     flex-direction: column;
     gap: 30px;
@@ -58,61 +72,68 @@ export const GlobalStyles = createGlobalStyle`
     width: 100%;
     -ms-overflow-style: none;
     scrollbar-width: none;
-    scroll-behavior: smooth;
     
-    &::-webkit-scrollbar{
+    &::-webkit-scrollbar {
       display: none;
     }
   }
 
-  
-  ::-webkit-scrollbar-track {
-    border-radius: 10px;
-    background-color: #222;
-  }
-
   ::-webkit-scrollbar {
     width: 4px;
-    border-radius: 10px;
-    background-color: #222;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: #0b0f0d;
   }
 
   ::-webkit-scrollbar-thumb {
+    background-color: #1f3d2e;
     border-radius: 10px;
-    background-color: #000;
+  }
+
+  .fadeInSection {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 1s ease-out, transform 1s ease-out;
+    will-change: opacity, transform;
+  }
+
+  .visible {
+    animation: fadeInLeft 1s ease-out forwards;
+  }
+
+  @keyframes fadeInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
 
   @media only screen and (max-width: 768px) {
-    body{
+    body {
       overflow: auto;
     }
 
-     main{
+    main {
       overscroll-behavior-y: initial;
       scroll-snap-type: initial;
       height: auto;
-     }
     }
 
-    .fadeInSection {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 1s ease-out, transform 1s ease-out;
-      will-change: opacity, transform;
+    h1 {
+      font-size: 48px;
     }
 
-    .visible {
-      animation: fadeInLeft 1s ease-out forwards;
+    h2 {
+      font-size: 24px;
     }
 
-    @keyframes fadeInLeft {
-      from {
-        opacity: 0;
-        transform: translateX(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
+    p {
+      font-size: 18px;
     }
+  }
 `;
