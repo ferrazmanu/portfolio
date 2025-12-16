@@ -7,7 +7,6 @@ const initialState: Language = {
   language: "pt",
 };
 
-// Actual Slice
 export const langSlice = createSlice({
   name: "lang",
   initialState,

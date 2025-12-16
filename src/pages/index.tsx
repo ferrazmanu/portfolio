@@ -1,55 +1,27 @@
-import { Container } from "@/components/Shared/Container";
-import { Header } from "@/components/Header";
-import { Presentation } from "@/components/Sections/Presentation";
-import { Datasheet } from "@/components/Sections/Datasheet";
-import { Projects } from "@/components/Sections/Projects";
-import { Career } from "@/components/Sections/Career";
-import { useRef } from "react";
-import { Contact } from "@/components/Sections/Contact";
-import { TranslationButton } from "@/components/TranslationButton";
-import { FloatingCat } from "@/components/FloatingCat";
+import { Wrapper } from "@/components/Wrapper";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function Home() {
-  const presentationRef = useRef();
-  const datasheetRef = useRef();
-  const projectsRef = useRef();
-  const careerRef = useRef();
-  const contactRef = useRef();
-
-  function scrollTo(section: any) {
-    section.current.scrollIntoView({
-      behaviour: "smooth",
-    });
-  }
+  const { handleTranslation } = useTranslation();
 
   return (
-    <>
-      <FloatingCat />
-      <TranslationButton />
-      <Header />
-      <main>
-        <Presentation
-          reference={presentationRef}
-          scrollTo={scrollTo}
-          nextSection={datasheetRef}
-        />
-        <Datasheet
-          reference={datasheetRef}
-          scrollTo={scrollTo}
-          nextSection={projectsRef}
-        />
-        <Projects
-          reference={projectsRef}
-          scrollTo={scrollTo}
-          nextSection={careerRef}
-        />
-        <Career
-          reference={careerRef}
-          scrollTo={scrollTo}
-          nextSection={contactRef}
-        />
-        <Contact reference={contactRef} />
-      </main>
-    </>
+    <Wrapper>
+      <h1>Manuela Ferraz</h1>
+      <h2>Front-end Developer</h2>
+
+      <p>
+        {handleTranslation({
+          text: `Eu crio experiências web acessíveis, escaláveis ​​e elegantes usando React, TypeScript e Next.`,
+          translation: `I build accessible, scalable and elegant web experiences using React, TypeScript and Next.`,
+        })}
+      </p>
+
+      <p style={{ textDecoration: "underline", marginTop: "1.2vw" }}>
+        {handleTranslation({
+          text: `Seja bem-vindo(a) ao meu portfólio!`,
+          translation: `Welcome to my portfolio!`,
+        })}
+      </p>
+    </Wrapper>
   );
 }

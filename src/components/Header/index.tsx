@@ -1,44 +1,53 @@
 import Link from "next/link";
 
 import * as S from "./styles";
-import { Translate } from "@/hooks/translate";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export function Header() {
+  const { handleTranslation } = useTranslation();
+
   const menu = [
     {
-      text: Translate({
-        text: `/apresentação`,
-        translation: `/presentation`,
-      }),
-      link: "#presentation",
+      text: {
+        pt: `/home`,
+        en: `/home`,
+      },
+      link: "/",
     },
     {
-      text: Translate({
-        text: `/ficha técnica`,
-        translation: `/datasheet`,
-      }),
-      link: "#datasheet",
+      text: {
+        pt: `/sobre`,
+        en: `/about`,
+      },
+      link: "/about",
     },
     {
-      text: Translate({
-        text: `/projetos`,
-        translation: `/projects`,
-      }),
-      link: "#projects",
+      text: {
+        pt: `/ficha técnica`,
+        en: `/skills`,
+      },
+      link: "/skills",
     },
     {
-      text: Translate({
-        text: `/carreira`,
-        translation: `/career`,
-      }),
-      link: "#career",
+      text: {
+        pt: `/projetos`,
+        en: `/projects`,
+      },
+      link: "/projects",
     },
     {
-      text: Translate({
-        text: `/contato`,
-        translation: `/contact`,
-      }),
-      link: "#contact",
+      text: {
+        pt: `/carreira`,
+        en: `/career`,
+      },
+      link: "/career",
+    },
+    {
+      text: {
+        pt: `/contato`,
+        en: `/contact`,
+      },
+      link: "/contact",
     },
   ];
 
@@ -48,8 +57,13 @@ export function Header() {
       <ul>
         {menu.map((item) => {
           return (
-            <li key={item.text}>
-              <Link href={item.link}>{item.text}</Link>
+            <li key={item.text.pt}>
+              <Link href={item.link}>
+                {handleTranslation({
+                  text: item.text.pt,
+                  translation: item.text.en,
+                })}
+              </Link>
             </li>
           );
         })}

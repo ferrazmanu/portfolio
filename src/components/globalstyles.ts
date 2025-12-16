@@ -12,7 +12,6 @@ export const GlobalStyles = createGlobalStyle`
     background-color: #111;
     font-family: 'Rajdhani', sans-serif;
     font-weight: 400;
-    overflow: hidden;
   }
 
   a {
@@ -32,6 +31,22 @@ export const GlobalStyles = createGlobalStyle`
     font-weight: 300;
   }
 
+  h1 {
+    font-size: 72px;
+    font-weight: 700;
+  }
+
+  h2 {
+    font-size: 32px;
+    font-weight: 300;
+    opacity: 0.8;
+  }
+
+  p {
+    font-size: 20px;
+    line-height: 1.6;
+  }
+
   main{
     display: flex;
     flex-direction: column;
@@ -40,12 +55,10 @@ export const GlobalStyles = createGlobalStyle`
     overflow-y: auto;
     overscroll-behavior-y: contain;
     scroll-snap-type: y mandatory;
-    height: 100dvh;
     width: 100%;
     -ms-overflow-style: none;
     scrollbar-width: none;
     scroll-behavior: smooth;
-    padding-right: 61px;
     
     &::-webkit-scrollbar{
       display: none;
