@@ -79,10 +79,4 @@ export const ButtonWrapper = styled.div`
   .checkbox:hover ~ .layer {
     opacity: 1;
   }
-
-  @media only screen and (max-width: 768px) {
-    left: unset;
-    right: 14px;
-    top: 14px;
-  }
 `;
