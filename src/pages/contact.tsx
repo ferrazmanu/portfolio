@@ -12,11 +12,11 @@ export default function Contact() {
 
     const text = handleTranslation({
       text: `Olá, Manuela! 👋
-            Encontrei seu contato pelo seu portfólio e gostaria de conversar sobre uma possível oportunidade ou projeto.
-            Podemos trocar uma ideia? 😊`,
+Encontrei seu contato pelo seu portfólio e gostaria de conversar sobre uma possível oportunidade ou projeto.
+Podemos trocar uma ideia? 😊`,
       translation: `Hi, Manuela! 👋
-            I found your contact through your portfolio and would love to talk about a possible opportunity or project.
-            Can we chat? 😊`,
+I found your contact through your portfolio and would love to talk about a possible opportunity or project.
+Can we chat? 😊`,
     });
 
     const formattedText = text.replace(/\n/g, "\n\n");
