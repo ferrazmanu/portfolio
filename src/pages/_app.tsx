@@ -7,6 +7,7 @@ import { FloatingCat } from "@/components/FloatingCat";
 import { Header } from "@/components/Header";
 import { TranslationButton } from "@/components/TranslationButton";
 import { Button } from "@/components/Button";
+import { SlytherinSnake } from "@/components/SlytherinSnake";
 
 function App({ Component, pageProps }: AppProps) {
   return (
@@ -16,7 +17,8 @@ function App({ Component, pageProps }: AppProps) {
         <title>Manuela Ferraz | Portfolio</title>
       </Head>
 
-      <FloatingCat />
+      <SlytherinSnake />
+
       <TranslationButton />
       <Header />
 
