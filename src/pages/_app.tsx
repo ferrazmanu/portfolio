@@ -16,7 +16,7 @@ function App(props: AppProps) {
         <title>Manuela Ferraz</title>
         <meta
           name="description"
-          content="Portfólio retrô de Manuela Ferraz, desenvolvedora Front-End."
+          content="Portfólio de Manuela Ferraz, desenvolvedora Front-End."
         />
       </Head>
 
