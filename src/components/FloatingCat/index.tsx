@@ -4,10 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import AstroCat from "@/assets/gifs/astrocat.gif";
 
-interface AssistantMessage {
-  pt: string;
-  en: string;
-}
+import { moveMessages, type AssistantMessage } from "./messages";
 
 interface FloatingCatProps {
   initialMessage: AssistantMessage;
@@ -47,33 +44,6 @@ const SHAKE_DIRECTION_WINDOW = 700;
 const SHAKE_MESSAGE_COOLDOWN = 2200;
 const SHAKE_REQUIRED_DIRECTION_CHANGES = 3;
 
-const moveMessages: AssistantMessage[] = [
-  {
-    pt: "Olha só, até que a vista daqui é mais legal!",
-    en: "Look at that, the view from here is actually better!",
-  },
-  {
-    pt: "Olha só, consigo ver a bolinha que eu perdi daqui!",
-    en: "Look at that, I can see the toy I lost from here!",
-  },
-  {
-    pt: "Novo cantinho aprovado. Vou fingir que foi ideia minha.",
-    en: "New spot approved. I'll pretend it was my idea.",
-  },
-  {
-    pt: "Mudança de cenário detectada. Meus pixels agradecem.",
-    en: "Change of scenery detected. My pixels appreciate it.",
-  },
-  {
-    pt: "Daqui eu consigo supervisionar o caos com mais elegância.",
-    en: "From here, I can supervise the chaos with more elegance.",
-  },
-  {
-    pt: "Ok, essa posição tem energia de assistente executivo.",
-    en: "Okay, this position has executive assistant energy.",
-  },
-];
-
 export const FloatingCat = ({
   initialMessage,
   externalMessage,
@@ -94,7 +64,7 @@ export const FloatingCat = ({
   });
   const [pokeCount, setPokeCount] = useState(0);
   const [activeMessage, setActiveMessage] = useState<AssistantMessage | null>(
-    null
+    null,
   );
   const [position, setPosition] = useState<AssistantPosition>({
     x: DEFAULT_ASSISTANT_GAP,
@@ -124,7 +94,7 @@ export const FloatingCat = ({
             assistantHeight -
             TASKBAR_HEIGHT -
             DEFAULT_ASSISTANT_GAP,
-        })
+        }),
       );
       setIsPositionReady(true);
     });
@@ -217,7 +187,7 @@ export const FloatingCat = ({
     const maxX = Math.max(0, window.innerWidth - assistantWidth - 8);
     const maxY = Math.max(
       0,
-      window.innerHeight - assistantHeight - TASKBAR_HEIGHT
+      window.innerHeight - assistantHeight - TASKBAR_HEIGHT,
     );
 
     return {
@@ -231,7 +201,8 @@ export const FloatingCat = ({
       .map((_, index) => index)
       .filter(
         (index) =>
-          moveMessages.length === 1 || index !== lastMoveMessageIndexRef.current
+          moveMessages.length === 1 ||
+          index !== lastMoveMessageIndexRef.current,
       );
     const nextIndex =
       availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
@@ -341,7 +312,7 @@ export const FloatingCat = ({
       clampPosition({
         x: dragState.originX + distanceX,
         y: dragState.originY + distanceY,
-      })
+      }),
     );
   };
 
