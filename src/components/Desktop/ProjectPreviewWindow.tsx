@@ -25,6 +25,7 @@ export function ProjectPreviewWindow({
 }: ProjectPreviewWindowProps) {
   return (
     <RetroWindow
+      key={project?.name ?? "project-preview"}
       id="project-preview"
       title={
         project
@@ -36,7 +37,6 @@ export function ProjectPreviewWindow({
       onMinimize={onClose}
       onClose={onClose}
       onFocus={onFocus}
-      defaultPosition={{ x: 260, y: 120 }}
       defaultSize={{ width: 720, height: 460 }}
       zIndex={zIndex}
     >

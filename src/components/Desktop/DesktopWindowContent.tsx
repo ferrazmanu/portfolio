@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CAREER_DATA } from "@/data/career";
 
 import { ProjectListWindow } from "./ProjectListWindow";
+import { ImagesWindow } from "./ImagesWindow";
 import { skillGroups } from "./desktopConfig";
 import type { TranslateFn, WindowId } from "./types";
 
@@ -10,12 +11,14 @@ interface DesktopWindowContentProps {
   windowId: WindowId;
   t: TranslateFn;
   onProjectPreviewOpen: (projectName: string) => void;
+  onImagePreviewOpen: (imageId: string) => void;
 }
 
 export function DesktopWindowContent({
   windowId,
   t,
   onProjectPreviewOpen,
+  onImagePreviewOpen,
 }: DesktopWindowContentProps) {
   if (windowId === "about") {
     return (
@@ -53,6 +56,10 @@ export function DesktopWindowContent({
         onProjectPreviewOpen={onProjectPreviewOpen}
       />
     );
+  }
+
+  if (windowId === "images") {
+    return <ImagesWindow t={t} onImageOpen={onImagePreviewOpen} />;
   }
 
   if (windowId === "experience") {

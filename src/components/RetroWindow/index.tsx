@@ -1,5 +1,5 @@
 import type { CSSProperties, PointerEvent, ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export interface RetroWindowPosition {
   x: number;
@@ -44,6 +44,12 @@ interface ResizeState {
 
 const MIN_WIDTH = 320;
 const MIN_HEIGHT = 220;
+const DEFAULT_CENTER_POSITION = { x: 120, y: 96 };
+
+const getCenteredPosition = (size: RetroWindowSize): RetroWindowPosition => ({
+  x: Math.max(12, (window.innerWidth - size.width) / 2),
+  y: Math.max(12, (window.innerHeight - size.height - 48) / 2),
+});
 
 export function RetroWindow({
   id,
@@ -59,16 +65,43 @@ export function RetroWindow({
   defaultSize = { width: 560, height: 420 },
   zIndex = 1,
 }: RetroWindowProps) {
-  const fallbackPosition = {
-    x: Math.max(12, (globalThis.innerWidth - defaultSize.width) / 2),
-    y: Math.max(12, (globalThis.innerHeight - defaultSize.height - 48) / 2),
-  };
-  const [position, setPosition] = useState(defaultPosition ?? fallbackPosition);
+  const shouldCalculateInitialPosition = !defaultPosition;
+  const [position, setPosition] = useState(
+    defaultPosition ?? DEFAULT_CENTER_POSITION
+  );
+  const [isPositionReady, setIsPositionReady] = useState(
+    Boolean(defaultPosition)
+  );
   const [size, setSize] = useState(defaultSize);
   const [dragState, setDragState] = useState<DragState | null>(null);
   const [resizeState, setResizeState] = useState<ResizeState | null>(null);
 
-  if (!isOpen || isMinimized) return null;
+  useEffect(() => {
+    if (!shouldCalculateInitialPosition) {
+      setPosition(defaultPosition);
+      setIsPositionReady(true);
+      return;
+    }
+
+    if (!isOpen) {
+      setIsPositionReady(false);
+      return;
+    }
+
+    const rafId = requestAnimationFrame(() => {
+      setPosition(getCenteredPosition(defaultSize));
+      setIsPositionReady(true);
+    });
+
+    return () => cancelAnimationFrame(rafId);
+  }, [
+    defaultPosition,
+    defaultSize,
+    isOpen,
+    shouldCalculateInitialPosition,
+  ]);
+
+  if (!isOpen || isMinimized || !isPositionReady) return null;
 
   const windowStyle: CSSProperties = {
     left: position.x,

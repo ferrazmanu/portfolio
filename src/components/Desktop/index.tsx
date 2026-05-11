@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   DesktopIcon,
@@ -12,6 +12,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { retroTheme } from "@/theme/retroTheme";
 
 import { DesktopWindowContent } from "./DesktopWindowContent";
+import { ImagePreviewWindow } from "./ImagePreviewWindow";
 import { ProjectPreviewWindow } from "./ProjectPreviewWindow";
 import {
   desktopWindows,
@@ -20,6 +21,7 @@ import {
   initialWindowOrder,
   initialWindowState,
 } from "./desktopConfig";
+import { desktopImages } from "./imagesConfig";
 import type { LocalizedText, WindowId } from "./types";
 
 export function Desktop() {
@@ -38,15 +40,73 @@ export function Desktop() {
     null,
   );
   const [projectPreviewZIndex, setProjectPreviewZIndex] = useState(90);
+  const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
+  const [imagePreviewZIndex, setImagePreviewZIndex] = useState(95);
   const [assistantExternalMessage, setAssistantExternalMessage] =
     useState<LocalizedText | null>(null);
 
   const t = ({ pt, en }: LocalizedText) =>
     handleTranslation({ text: pt, translation: en });
 
+  const getWindowAssistantMessage = (id: WindowId): LocalizedText => {
+    const messages: Record<WindowId, LocalizedText> = {
+      about: {
+        pt: "Essa é a janela principal. Sim, a Manu sabe React, TypeScript e Next.js. Eu supervisionei.",
+        en: "This is the main window. Yes, she knows React, TypeScript, and Next.js. I supervised.",
+      },
+      projects: {
+        pt: "Projetos abertos. Clique nas imagens se quiser ver as prévias maiores. Eu gosto de thumbnails dramáticas.",
+        en: "Projects opened. Click the images if you want bigger previews. I like dramatic thumbnails.",
+      },
+      images: {
+        pt: "Pasta de imagens aberta. Aqui vivem wallpapers, previews e arquivos suspeitos com extensão .bmp.",
+        en: "Images folder opened. Wallpapers, previews, and suspicious .bmp files live here.",
+      },
+      experience: {
+        pt: "Linha do tempo profissional. Spoiler: tem front-end, produto e bastante café implícito.",
+        en: "Professional timeline. Spoiler: front-end, product work, and plenty of implied coffee.",
+      },
+      skills: {
+        pt: "Skills carregadas. Eu teria adicionado 'convencer gatos a cooperar', mas faltou validação técnica.",
+        en: "Skills loaded. I would add 'convincing cats to cooperate', but it lacks technical validation.",
+      },
+      contact: {
+        pt: "Contato aberto. Uma boa janela para chamar a Manu antes que eu mude de ideia.",
+        en: "Contact opened. A good window to reach Manu before I change my mind.",
+      },
+      resume: {
+        pt: "Currículo em PDF. Formal, direto e com menos comentários sarcásticos do que eu gostaria.",
+        en: "Resume in PDF. Formal, direct, and with fewer sarcastic comments than I would like.",
+      },
+      trash: {
+        pt: "A lixeira está vazia. Ao contrário da minha lista de opiniões sobre layouts.",
+        en: "Trash is empty. Unlike my list of opinions about layouts.",
+      },
+    };
+
+    return messages[id];
+  };
+
   const selectedProject = selectedProjectName
     ? PROJECTS_DATA.find((project) => project.name === selectedProjectName)
     : undefined;
+  const selectedImage = selectedImageId
+    ? desktopImages.find((image) => image.id === selectedImageId)
+    : undefined;
+
+  const hasOpenWindow =
+    Object.values(openWindows).some(Boolean) ||
+    Boolean(selectedProject) ||
+    Boolean(selectedImage);
+
+  useEffect(() => {
+    if (hasOpenWindow) return;
+
+    setAssistantExternalMessage({
+      pt: "Todas as janelas foram fechadas. Minimalismo radical ou você só está me deixando sozinho?",
+      en: "All windows are closed. Radical minimalism, or are you just leaving me alone?",
+    });
+  }, [hasOpenWindow]);
 
   const bringToFront = (id: WindowId) => {
     setActiveWindowId(id);
@@ -63,6 +123,7 @@ export function Desktop() {
       [id]: false,
     }));
     bringToFront(id);
+    setAssistantExternalMessage(getWindowAssistantMessage(id));
   };
 
   const minimizeWindow = (id: WindowId) => {
@@ -91,8 +152,33 @@ export function Desktop() {
 
   const openProjectPreview = (projectName: string) => {
     setSelectedProjectName(projectName);
+    setAssistantExternalMessage({
+      pt: `Abrindo imagem de ${projectName}. Muito profissional. Muito pixels. Aprovado.`,
+      en: `Opening ${projectName}'s image. Very professional. Very pixels. Approved.`,
+    });
     setProjectPreviewZIndex(
       Math.max(...Object.values(windowOrder), projectPreviewZIndex) + 1,
+    );
+  };
+
+  const openImagePreview = (imageId: string) => {
+    const image = desktopImages.find((item) => item.id === imageId);
+
+    setSelectedImageId(imageId);
+    setAssistantExternalMessage({
+      pt: image
+        ? `Abrindo ${image.title}. Totalmente legítimo. Provavelmente.`
+        : "Abrindo imagem misteriosa. Isso nunca deu problema em computadores antigos.",
+      en: image
+        ? `Opening ${image.title}. Totally legitimate. Probably.`
+        : "Opening mysterious image. This never caused trouble on old computers.",
+    });
+    setImagePreviewZIndex(
+      Math.max(
+        ...Object.values(windowOrder),
+        projectPreviewZIndex,
+        imagePreviewZIndex
+      ) + 1
     );
   };
 
@@ -138,13 +224,11 @@ export function Desktop() {
       </div>
 
       <FloatingCat
-        initialMessage={t({
+        initialMessage={{
           pt: "Oi! Clique nos ícones para abrir as janelas. Eu fico por aqui caso precise de ajuda. Tecnicamente. Na prática, sou um gato.",
           en: "Hi! Click the icons to open windows. I'll hang around in case you need help. Technically. In practice, I'm a cat.",
-        })}
-        externalMessage={
-          assistantExternalMessage ? t(assistantExternalMessage) : undefined
-        }
+        }}
+        externalMessage={assistantExternalMessage ?? undefined}
         translateMessage={t}
       />
 
@@ -169,6 +253,7 @@ export function Desktop() {
             windowId={windowItem.id}
             t={t}
             onProjectPreviewOpen={openProjectPreview}
+            onImagePreviewOpen={openImagePreview}
           />
         </RetroWindow>
       ))}
@@ -179,6 +264,22 @@ export function Desktop() {
         zIndex={projectPreviewZIndex}
         onClose={() => setSelectedProjectName(null)}
         onFocus={bringProjectPreviewToFront}
+      />
+
+      <ImagePreviewWindow
+        image={selectedImage}
+        t={t}
+        zIndex={imagePreviewZIndex}
+        onClose={() => setSelectedImageId(null)}
+        onFocus={() =>
+          setImagePreviewZIndex(
+            Math.max(
+              ...Object.values(windowOrder),
+              projectPreviewZIndex,
+              imagePreviewZIndex
+            ) + 1
+          )
+        }
       />
 
       <Taskbar
@@ -196,6 +297,7 @@ export function Desktop() {
             [windowId]: false,
           }));
           bringToFront(windowId);
+          setAssistantExternalMessage(getWindowAssistantMessage(windowId));
         }}
         onMenuEasterEgg={() =>
           setAssistantExternalMessage({

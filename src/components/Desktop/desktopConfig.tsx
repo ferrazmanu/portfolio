@@ -2,6 +2,7 @@ import {
   AboutIcon,
   ContactIcon,
   ExperienceIcon,
+  ImagesIcon,
   ProjectsIcon,
   ResumeIcon,
   SkillsIcon,
@@ -14,7 +15,7 @@ import type { DesktopWindowConfig, WindowId } from "./types";
 export const desktopWindows: DesktopWindowConfig[] = [
   {
     id: "about",
-    title: { pt: "Sobre mim.exe", en: "About me.exe" },
+    title: { pt: "Sobre mim", en: "About me" },
     label: { pt: "Sobre mim", en: "About me" },
     icon: <AboutIcon />,
     iconPosition: { x: 36, y: 34 },
@@ -29,6 +30,15 @@ export const desktopWindows: DesktopWindowConfig[] = [
     iconPosition: { x: 260, y: 92 },
     position: { x: 310, y: 98 },
     size: { width: 760, height: 520 },
+  },
+  {
+    id: "images",
+    title: { pt: "Imagens", en: "Images" },
+    label: { pt: "Imagens", en: "Images" },
+    icon: <ImagesIcon />,
+    iconPosition: { x: 840, y: 72 },
+    position: { x: 330, y: 112 },
+    size: { width: 680, height: 480 },
   },
   {
     id: "experience",
@@ -50,7 +60,7 @@ export const desktopWindows: DesktopWindowConfig[] = [
   },
   {
     id: "contact",
-    title: { pt: "Connect", en: "Connect" },
+    title: { pt: "Contato", en: "Contact" },
     label: { pt: "Contato", en: "Contact" },
     icon: <ContactIcon />,
     iconPosition: { x: 720, y: 232 },
@@ -98,6 +108,7 @@ export const skillGroups = [
 
 export const initialWindowState: Record<WindowId, boolean> = {
   about: true,
+  images: false,
   projects: false,
   experience: false,
   skills: false,
@@ -108,6 +119,7 @@ export const initialWindowState: Record<WindowId, boolean> = {
 
 export const initialMinimizedWindowState: Record<WindowId, boolean> = {
   about: false,
+  images: false,
   projects: false,
   experience: false,
   skills: false,
@@ -118,6 +130,7 @@ export const initialMinimizedWindowState: Record<WindowId, boolean> = {
 
 export const initialWindowOrder: Record<WindowId, number> = {
   about: 10,
+  images: 15,
   projects: 20,
   experience: 30,
   skills: 40,
@@ -135,11 +148,12 @@ export const initialIconPositions = desktopWindows.reduce<
   }),
   {
     about: { x: 36, y: 34 },
+    images: { x: 840, y: 72 },
     projects: { x: 260, y: 92 },
     experience: { x: 72, y: 224 },
     skills: { x: 520, y: 42 },
     contact: { x: 720, y: 232 },
     resume: { x: 430, y: 326 },
     trash: { x: 940, y: 410 },
-  }
+  },
 );
