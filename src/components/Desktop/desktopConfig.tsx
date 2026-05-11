@@ -81,8 +81,8 @@ export const desktopWindows: DesktopWindowConfig[] = [
     title: { pt: "Lixeira", en: "Trash" },
     label: { pt: "Lixeira", en: "Trash" },
     icon: <TrashIcon />,
-    iconPosition: { x: 1040, y: 470 },
-    position: { x: 620, y: 220 },
+    iconPosition: { x: 900, y: 400 },
+    position: { x: 420, y: 220 },
     size: { width: 360, height: 260 },
   },
 ];
@@ -154,6 +154,6 @@ export const initialIconPositions = desktopWindows.reduce<
     skills: { x: 536, y: 82 },
     contact: { x: 940, y: 238 },
     resume: { x: 418, y: 398 },
-    trash: { x: 1040, y: 470 },
+    trash: { x: 900, y: 400 },
   },
 );

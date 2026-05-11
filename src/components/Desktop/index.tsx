@@ -1,6 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
+  DESKTOP_ICON_HEIGHT,
+  DESKTOP_ICON_WIDTH,
+  DESKTOP_TASKBAR_HEIGHT,
   DesktopIcon,
   type DesktopIconPosition,
 } from "@/components/DesktopIcon";
@@ -24,6 +27,47 @@ import {
 import { desktopImages } from "./imagesConfig";
 import type { LocalizedText, WindowId } from "./types";
 
+const ICON_DESIGN_WIDTH = 1200;
+const ICON_DESIGN_HEIGHT = 620;
+
+const clampIconPosition = (
+  position: DesktopIconPosition
+): DesktopIconPosition => {
+  const maxX = Math.max(0, window.innerWidth - DESKTOP_ICON_WIDTH);
+  const maxY = Math.max(
+    0,
+    window.innerHeight - DESKTOP_ICON_HEIGHT - DESKTOP_TASKBAR_HEIGHT
+  );
+
+  return {
+    x: Math.min(maxX, Math.max(0, position.x)),
+    y: Math.min(maxY, Math.max(0, position.y)),
+  };
+};
+
+const getResponsiveIconPositions = (): Record<WindowId, DesktopIconPosition> =>
+  desktopWindows.reduce<Record<WindowId, DesktopIconPosition>>(
+    (positions, windowItem) => {
+      const maxDesignX = ICON_DESIGN_WIDTH - DESKTOP_ICON_WIDTH;
+      const maxDesignY =
+        ICON_DESIGN_HEIGHT - DESKTOP_ICON_HEIGHT - DESKTOP_TASKBAR_HEIGHT;
+      const maxViewportX = Math.max(0, window.innerWidth - DESKTOP_ICON_WIDTH);
+      const maxViewportY = Math.max(
+        0,
+        window.innerHeight - DESKTOP_ICON_HEIGHT - DESKTOP_TASKBAR_HEIGHT
+      );
+
+      return {
+        ...positions,
+        [windowItem.id]: clampIconPosition({
+          x: (windowItem.iconPosition.x / maxDesignX) * maxViewportX,
+          y: (windowItem.iconPosition.y / maxDesignY) * maxViewportY,
+        }),
+      };
+    },
+    initialIconPositions
+  );
+
 export function Desktop() {
   const { handleTranslation } = useTranslation();
   const [openWindows, setOpenWindows] =
@@ -44,6 +88,7 @@ export function Desktop() {
   const [imagePreviewZIndex, setImagePreviewZIndex] = useState(95);
   const [assistantExternalMessage, setAssistantExternalMessage] =
     useState<LocalizedText | null>(null);
+  const hasDraggedIconRef = useRef(false);
 
   const t = ({ pt, en }: LocalizedText) =>
     handleTranslation({ text: pt, translation: en });
@@ -108,6 +153,31 @@ export function Desktop() {
     });
   }, [hasOpenWindow]);
 
+  useEffect(() => {
+    const updateResponsiveIconPositions = () => {
+      if (hasDraggedIconRef.current) {
+        setIconPositions((currentPositions) =>
+          desktopWindows.reduce<Record<WindowId, DesktopIconPosition>>(
+            (positions, windowItem) => ({
+              ...positions,
+              [windowItem.id]: clampIconPosition(currentPositions[windowItem.id]),
+            }),
+            currentPositions
+          )
+        );
+        return;
+      }
+
+      setIconPositions(getResponsiveIconPositions());
+    };
+
+    updateResponsiveIconPositions();
+    window.addEventListener("resize", updateResponsiveIconPositions);
+
+    return () =>
+      window.removeEventListener("resize", updateResponsiveIconPositions);
+  }, []);
+
   const bringToFront = (id: WindowId) => {
     setActiveWindowId(id);
     setWindowOrder((currentOrder) => ({
@@ -144,6 +214,7 @@ export function Desktop() {
   const updateIconPosition = (id: string, position: DesktopIconPosition) => {
     if (!desktopWindows.some((windowItem) => windowItem.id === id)) return;
 
+    hasDraggedIconRef.current = true;
     setIconPositions((currentPositions) => ({
       ...currentPositions,
       [id as WindowId]: position,

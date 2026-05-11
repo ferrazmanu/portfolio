@@ -24,9 +24,9 @@ interface DragState {
   originY: number;
 }
 
-const ICON_WIDTH = 96;
-const ICON_HEIGHT = 88;
-const TASKBAR_HEIGHT = 48;
+export const DESKTOP_ICON_WIDTH = 96;
+export const DESKTOP_ICON_HEIGHT = 88;
+export const DESKTOP_TASKBAR_HEIGHT = 48;
 
 export function DesktopIcon({
   id,
@@ -81,8 +81,11 @@ export function DesktopIcon({
       wasDraggedRef.current = true;
     }
 
-    const maxX = Math.max(0, window.innerWidth - ICON_WIDTH);
-    const maxY = Math.max(0, window.innerHeight - ICON_HEIGHT - TASKBAR_HEIGHT);
+    const maxX = Math.max(0, window.innerWidth - DESKTOP_ICON_WIDTH);
+    const maxY = Math.max(
+      0,
+      window.innerHeight - DESKTOP_ICON_HEIGHT - DESKTOP_TASKBAR_HEIGHT
+    );
 
     onPositionChange(id, {
       x: Math.min(maxX, Math.max(0, dragState.originX + distanceX)),
