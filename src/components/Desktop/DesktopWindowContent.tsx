@@ -168,9 +168,10 @@ export function DesktopWindowContent({
         <Link
           className="retro-button inline-block"
           href="/documents/resume.pdf"
-          download
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          {t({ pt: "Baixar currículo", en: "Download resume" })}
+          {t({ pt: "Abrir currículo", en: "Open resume" })}
         </Link>
       </div>
     );
