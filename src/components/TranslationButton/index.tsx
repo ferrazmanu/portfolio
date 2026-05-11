@@ -1,8 +1,6 @@
 import { selectLangState, setLanguage } from "@/store/langSlice";
 import { useDispatch, useSelector } from "react-redux";
 
-import * as S from "./styles";
-
 export const TranslationButton = () => {
   const language = useSelector(selectLangState);
   const dispatch = useDispatch();
@@ -10,23 +8,22 @@ export const TranslationButton = () => {
   const handleClick = () => {
     if (language === "pt") {
       dispatch(setLanguage("en"));
-    } else {
-      dispatch(setLanguage("pt"));
+      return;
     }
+
+    dispatch(setLanguage("pt"));
   };
 
   return (
-    <S.ButtonWrapper className="translation">
-      <div className="button">
-        <input
-          type="checkbox"
-          className="checkbox"
-          onChange={() => handleClick()}
-          defaultChecked={language !== "pt"}
-        />
-        <div className="knobs"></div>
-        <div className="layer"></div>
-      </div>
-    </S.ButtonWrapper>
+    <button
+      type="button"
+      className="flex h-7 min-w-9 items-center justify-center bg-transparent px-1 text-[11px] font-bold leading-none text-black focus:outline focus:outline-1 focus:outline-dotted focus:outline-black"
+      onClick={handleClick}
+      aria-label={`Alternar idioma para ${
+        language === "pt" ? "inglês" : "português"
+      }`}
+    >
+      {language === "pt" ? "PTB" : "ENG"}
+    </button>
   );
 };

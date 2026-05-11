@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --retro-desktop: #07110b;
+  --retro-titlebar: #0b6f35;
+  --retro-window-gray: #b9c3b7;
+  --retro-border-light: #ffffff;
+  --retro-border-dark: #203026;
+  --retro-text: #d6ffd8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  color: var(--retro-text);
+}
+
+body {
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+a {
+  cursor: default;
+}
+
+ul,
+li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+@layer components {
+  .retro-border {
+    border-width: 2px;
+    border-style: solid;
+    border-top-color: var(--retro-border-light);
+    border-left-color: var(--retro-border-light);
+    border-right-color: var(--retro-border-dark);
+    border-bottom-color: var(--retro-border-dark);
+  }
+
+  .retro-border-inset {
+    border-width: 2px;
+    border-style: solid;
+    border-top-color: var(--retro-border-dark);
+    border-left-color: var(--retro-border-dark);
+    border-right-color: var(--retro-border-light);
+    border-bottom-color: var(--retro-border-light);
+  }
+
+  .retro-button {
+    @apply retro-border bg-retro-gray px-2 py-1 text-xs font-bold text-black active:retro-border-inset focus:outline focus:outline-1 focus:outline-dotted focus:outline-black;
+  }
+
+  .retro-window {
+    @apply retro-border bg-retro-gray shadow-retro;
+  }
+
+  .retro-titlebar {
+    @apply flex h-7 items-center justify-between gap-2 bg-retro-titlebar px-1 text-xs font-bold text-white;
+  }
+
+  .desktop-label {
+    @apply mt-1 max-w-[88px] break-words bg-[#001b0f]/90 px-1 text-center text-[11px] leading-tight text-[#d6ffd8];
+  }
+
+  .selection-outline {
+    @apply outline outline-1 outline-dotted outline-black;
+  }
+}
+
+.desktop-texture {
+  background-color: var(--retro-desktop);
+  background-image:
+    linear-gradient(rgba(33, 255, 116, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(33, 255, 116, 0.08) 1px, transparent 1px),
+    radial-gradient(circle at 18px 18px, rgba(33, 255, 116, 0.16) 1px, transparent 2px);
+  background-position: 0 0, 0 0, 0 0;
+  background-size: 36px 36px, 36px 36px, 36px 36px;
+}
+
+.desktop-texture::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(120, 255, 150, 0.05) 0,
+      rgba(120, 255, 150, 0.05) 1px,
+      transparent 1px,
+      transparent 5px
+    ),
+    radial-gradient(circle at 50% 50%, transparent 0, rgba(0, 0, 0, 0.42) 78%);
+  mix-blend-mode: screen;
+}
+
+.retro-scrollbar {
+  scrollbar-color: #808080 #dfdfdf;
+  scrollbar-width: thin;
+}
+
+.retro-scrollbar::-webkit-scrollbar {
+  width: 14px;
+}
+
+.retro-scrollbar::-webkit-scrollbar-track {
+  background: #dfdfdf;
+}
+
+.retro-scrollbar::-webkit-scrollbar-thumb {
+  background: #9a9a9a;
+  border: 2px solid #dfdfdf;
+}
+
+@media (max-width: 768px) {
+  .retro-window-shell {
+    inset: 12px 12px 52px 12px !important;
+    width: auto !important;
+    height: auto !important;
+    transform: none !important;
+  }
+}

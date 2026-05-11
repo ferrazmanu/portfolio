@@ -1,9 +1,9 @@
-import { MutableRefObject, RefObject } from "react";
+import { RefObject } from "react";
 
 export interface SectionProps {
-  reference: any;
-  scrollTo?: Function;
-  nextSection?: any;
+  reference: RefObject<HTMLElement>;
+  scrollTo?: () => void;
+  nextSection?: RefObject<HTMLElement>;
 }
 
 export interface Language {

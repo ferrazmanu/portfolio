@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { AppState } from "./store";
 import { HYDRATE } from "next-redux-wrapper";
 import { Language } from "@/types";
@@ -11,18 +11,20 @@ export const langSlice = createSlice({
   name: "lang",
   initialState,
   reducers: {
-    setLanguage(state, action) {
+    setLanguage(state, action: PayloadAction<Language["language"]>) {
       state.language = action.payload;
     },
   },
 
-  extraReducers: {
-    [HYDRATE]: (state, action) => {
+  extraReducers: (builder) => {
+    builder.addCase(HYDRATE, (state, action) => {
+      const hydrateAction = action as PayloadAction<{ lang?: Language }>;
+
       return {
         ...state,
-        ...action.payload.lang,
+        ...hydrateAction.payload.lang,
       };
-    },
+    });
   },
 });
 

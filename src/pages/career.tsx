@@ -1,58 +1,21 @@
 import { SectionTitle } from "@/components/SectionTitle";
 import { Wrapper } from "@/components/Wrapper";
 import { CAREER_DATA } from "@/data/career";
-import { useTranslation } from "@/hooks/useTranslation";
-import styled from "styled-components";
 
 export default function Career() {
-  const { handleTranslation } = useTranslation();
-
   return (
-    <CareerSection id="career">
-      <SectionTitle>
-        {handleTranslation({
-          text: `Carreira`,
-          translation: `Career`,
-        })}
-      </SectionTitle>
+    <Wrapper id="career" className="gap-8">
+      <SectionTitle>Carreira</SectionTitle>
 
-      <ul>
+      <ul className="flex flex-col gap-10">
         {CAREER_DATA.map((job) => (
-          <li key={job.title}>
-            <span className="time">
-              {handleTranslation({
-                text: job.time.pt,
-                translation: job.time.en,
-              })}
-            </span>
-            <h4>{job.title}</h4>
-            <p>
-              {handleTranslation({
-                text: job.description.pt,
-                translation: job.description.en,
-              })}
-            </p>
+          <li key={job.title} className="border-l-2 border-black pl-6">
+            <span className="text-sm opacity-70">{job.time.pt}</span>
+            <h4 className="text-xl font-bold">{job.title}</h4>
+            <p>{job.description.pt}</p>
           </li>
         ))}
       </ul>
-    </CareerSection>
+    </Wrapper>
   );
 }
-
-export const CareerSection = styled(Wrapper)`
-  ul {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-  }
-
-  li {
-    border-left: 2px solid #333;
-    padding-left: 24px;
-  }
-
-  .time {
-    font-size: 14px;
-    opacity: 0.6;
-  }
-`;
