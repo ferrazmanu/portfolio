@@ -167,10 +167,10 @@ export function Desktop() {
     setSelectedImageId(imageId);
     setAssistantExternalMessage({
       pt: image
-        ? `Abrindo ${image.title}. Totalmente legítimo. Provavelmente.`
+        ? `Abrindo ${image.title}.`
         : "Abrindo imagem misteriosa. Isso nunca deu problema em computadores antigos.",
       en: image
-        ? `Opening ${image.title}. Totally legitimate. Probably.`
+        ? `Opening ${image.title}.`
         : "Opening mysterious image. This never caused trouble on old computers.",
     });
     setImagePreviewZIndex(
