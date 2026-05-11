@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 
 import AstroCat from "@/assets/gifs/astrocat.gif";
 
-import { moveMessages, type AssistantMessage } from "./messages";
+import { getRandomAssistantMessage } from "./messageUtils";
+import { moveMessages, shakeMessages, type AssistantMessage } from "./messages";
 
 interface FloatingCatProps {
   initialMessage: AssistantMessage;
@@ -51,6 +52,7 @@ export const FloatingCat = ({
 }: FloatingCatProps) => {
   const assistantRef = useRef<HTMLDivElement>(null);
   const lastMoveMessageIndexRef = useRef<number | null>(null);
+  const lastShakeMessageIndexRef = useRef<number | null>(null);
   const shookDuringDragRef = useRef(false);
   const wasDraggedRef = useRef(false);
   const shakeTrackerRef = useRef<ShakeTracker>({
@@ -197,19 +199,25 @@ export const FloatingCat = ({
   };
 
   const getRandomMoveMessage = () => {
-    const availableIndexes = moveMessages
-      .map((_, index) => index)
-      .filter(
-        (index) =>
-          moveMessages.length === 1 ||
-          index !== lastMoveMessageIndexRef.current,
-      );
-    const nextIndex =
-      availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
+    const result = getRandomAssistantMessage(
+      moveMessages,
+      lastMoveMessageIndexRef.current,
+    );
 
-    lastMoveMessageIndexRef.current = nextIndex;
+    lastMoveMessageIndexRef.current = result.index;
 
-    return moveMessages[nextIndex];
+    return result.message;
+  };
+
+  const getRandomShakeMessage = () => {
+    const result = getRandomAssistantMessage(
+      shakeMessages,
+      lastShakeMessageIndexRef.current,
+    );
+
+    lastShakeMessageIndexRef.current = result.index;
+
+    return result.message;
   };
 
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
@@ -294,10 +302,7 @@ export const FloatingCat = ({
         now - shakeTracker.firstDirectionChangeAt <= SHAKE_DIRECTION_WINDOW &&
         now - shakeTracker.lastMessageAt >= SHAKE_MESSAGE_COOLDOWN
       ) {
-        setActiveMessage({
-          pt: "Ei! Meus bigodes são virtuais, mas eu ainda tenho sentimentos.",
-          en: "Hey! My whiskers are virtual, but I still have feelings.",
-        });
+        setActiveMessage(getRandomShakeMessage());
         shookDuringDragRef.current = true;
         shakeTracker.directionChanges = 0;
         shakeTracker.firstDirectionChangeAt = 0;

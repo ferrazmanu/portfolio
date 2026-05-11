@@ -129,3 +129,106 @@ export const moveMessages: AssistantMessage[] = [
     en: "If you're moving me again, at least put me near a cardboard box. I have standards.",
   },
 ];
+
+export const shakeMessages: AssistantMessage[] = [
+  {
+    pt: "Ei! Meus bigodes são virtuais, mas eu ainda tenho sentimentos.",
+    en: "Hey! My whiskers are virtual, but I still have feelings.",
+  },
+  {
+    pt: "Com licença? Isso foi uma sacudida ou uma tentativa de reiniciar meu sistema emocional?",
+    en: "Excuse me? Was that a shake or an attempt to reboot my emotional system?",
+  },
+  {
+    pt: "Se eu vomitar uma bola de pelo digital, a culpa é sua.",
+    en: "If I cough up a digital hairball, that's on you.",
+  },
+  {
+    pt: "Meu advogado felino foi notificado.",
+    en: "My feline lawyer has been notified.",
+  },
+  {
+    pt: "Eu sou um assistente, não um chocalho com autoestima.",
+    en: "I'm an assistant, not a rattle with self-esteem.",
+  },
+  {
+    pt: "Sacudida detectada. Confiança no usuário reduzida em 37%.",
+    en: "Shake detected. Trust in user reduced by 37%.",
+  },
+  {
+    pt: "Isso foi desnecessário. Divertido, talvez. Mas desnecessário.",
+    en: "That was unnecessary. Entertaining, maybe. But unnecessary.",
+  },
+  {
+    pt: "Se queria minha atenção, parabéns. Agora você tem meu julgamento também.",
+    en: "If you wanted my attention, congratulations. Now you have my judgment too.",
+  },
+  {
+    pt: "Eu tinha um pensamento. Ele caiu no chão.",
+    en: "I had a thought. It fell on the floor.",
+  },
+  {
+    pt: "Favor não misturar o gato antes de usar.",
+    en: "Please do not shake the cat before use.",
+  },
+  {
+    pt: "Isso contou como exercício? Porque eu não autorizei.",
+    en: "Did that count as exercise? Because I did not authorize it.",
+  },
+  {
+    pt: "Minha dignidade acabou de dar tela azul.",
+    en: "My dignity just blue-screened.",
+  },
+  {
+    pt: "Eu já era dramaticamente instável antes. Agora você só piorou.",
+    en: "I was already dramatically unstable before. Now you've made it worse.",
+  },
+  {
+    pt: "Sacudir o assistente não melhora a performance. Só piora o humor.",
+    en: "Shaking the assistant does not improve performance. It only worsens the mood.",
+  },
+  {
+    pt: "Meus pixels estão desalinhados. Espero que esteja feliz.",
+    en: "My pixels are misaligned. I hope you're happy.",
+  },
+  {
+    pt: "Relatório de danos: orgulho ferido, bigodes desalinhados, zero arrependimento da sua parte.",
+    en: "Damage report: wounded pride, misaligned whiskers, zero remorse from you.",
+  },
+  {
+    pt: "Você acabou de transformar um gato em liquidificador emocional.",
+    en: "You just turned a cat into an emotional blender.",
+  },
+  {
+    pt: "Da próxima vez, pelo menos coloque uma música dramática antes.",
+    en: "Next time, at least play dramatic music first.",
+  },
+  {
+    pt: "Eu não sou um Magic 8-Ball. Mas minha resposta é: pare.",
+    en: "I'm not a Magic 8-Ball. But my answer is: stop.",
+  },
+  {
+    pt: "Ok, agora todos os meus pensamentos estão em ordem alfabética. Péssimo.",
+    en: "Okay, now all my thoughts are in alphabetical order. Terrible.",
+  },
+  {
+    pt: "Sacudido, não mexido. Ainda assim, ofendido.",
+    en: "Shaken, not stirred. Still offended.",
+  },
+  {
+    pt: "Você desbloqueou o modo: gato levemente traumatizado.",
+    en: "You unlocked mode: mildly traumatized cat.",
+  },
+  {
+    pt: "Se isso era um teste de QA, eu falhei emocionalmente.",
+    en: "If this was a QA test, I failed emotionally.",
+  },
+  {
+    pt: "A estabilidade do sistema está normal. A minha, nem tanto.",
+    en: "System stability is normal. Mine, not so much.",
+  },
+  {
+    pt: "Eu estava contemplando a existência. Agora estou contemplando uma reclamação formal.",
+    en: "I was contemplating existence. Now I'm contemplating a formal complaint.",
+  },
+];
