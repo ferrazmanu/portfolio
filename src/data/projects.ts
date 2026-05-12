@@ -1,12 +1,12 @@
-import ActivitiesImage from "assets/images/80-activities.vercel.app.png";
-import DungeonToolsImage from "assets/images/dungeon-tools.vercel.app.png";
-import IsabellaImage from "assets/images/isabella-matokanovich.vercel.app.png";
-import MarvelAppImage from "assets/images/marvel-app-pl.vercel.app.png";
-import PetLoveImage from "assets/images/pet-love-eta.vercel.app.png";
-import CatPalaceImage from "assets/images/www.catpalace.store.png";
-import MoviesListImage from "assets/images/movies-list-labor.vercel.app.png";
-import JulianaCosplayerImage from "assets/images/juhcosplay.vercel.app.png";
-import TritecImage from "assets/images/tritec.vercel.app.png";
+import ActivitiesImage from "assets/images/80-activities-vercel-app.png";
+import DungeonToolsImage from "assets/images/dungeon-tools-vercel-app.png";
+import IsabellaImage from "assets/images/isabella-matokanovich-vercel-app.png";
+import MarvelAppImage from "assets/images/marvel-app-pl-vercel-app.png";
+import PetLoveImage from "assets/images/pet-love-eta-vercel-app.png";
+import CatPalaceImage from "assets/images/www-catpalace-store.png";
+import MoviesListImage from "assets/images/movies-list-labor-vercel-app.png";
+import JulianaCosplayerImage from "assets/images/juhcosplay-vercel-app.png";
+import TritecImage from "assets/images/tritec-vercel-app.png";
 import PrivateProjectImage from "assets/images/private-project.png";
 
 export const PROJECTS_DATA = [

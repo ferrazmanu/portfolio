@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
-import { TranslationButton } from "@/components/TranslationButton";
+import { TranslationButton } from "@/components/translation-button";
 
 export interface TaskbarWindow {
   id: string;

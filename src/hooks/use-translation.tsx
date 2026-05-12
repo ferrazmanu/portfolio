@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { selectLangState } from "@/store/langSlice";
+import { selectLangState } from "@/store/lang-slice";
 import { TranslationProps } from "@/types";
 
 export const useTranslation = () => {
