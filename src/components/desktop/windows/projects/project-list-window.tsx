@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { PROJECTS_DATA } from "@/data/projects";
 
-import type { TranslateFn } from "./types";
+import type { TranslateFn } from "../../types";
 
 interface ProjectListWindowProps {
   t: TranslateFn;

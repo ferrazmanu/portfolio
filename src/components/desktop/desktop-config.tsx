@@ -7,8 +7,8 @@ import {
   ResumeIcon,
   SkillsIcon,
   TrashIcon,
-} from "@/components/Desktop/RetroIcons";
-import type { DesktopIconPosition } from "@/components/DesktopIcon";
+} from "@/components/desktop/retro-icons";
+import type { DesktopIconPosition } from "@/components/desktop-icon";
 
 import type { DesktopWindowConfig, WindowId } from "./types";
 
@@ -86,25 +86,6 @@ export const desktopWindows: DesktopWindowConfig[] = [
     size: { width: 360, height: 260 },
   },
 ];
-
-export const skillGroups = [
-  {
-    title: { pt: "Front-end", en: "Front-end" },
-    items: ["React", "Next.js", "TypeScript", "HTML", "CSS", "Tailwind CSS"],
-  },
-  {
-    title: { pt: "Ferramentas", en: "Tools" },
-    items: ["Git", "Redux Toolkit", "React Query", "React Hook Form", "Zod"],
-  },
-  {
-    title: { pt: "Design", en: "Design" },
-    items: ["Figma", "UI responsiva", "Acessibilidade", "Design system"],
-  },
-  {
-    title: { pt: "Outros", en: "Other" },
-    items: ["API REST", "GraphQL", "Inglês C2", "Organização de produto"],
-  },
-] as const;
 
 export const initialWindowState: Record<WindowId, boolean> = {
   about: true,

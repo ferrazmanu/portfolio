@@ -1,10 +1,10 @@
 import Image from "next/image";
 
-import { ImagesIcon } from "@/components/Desktop/RetroIcons";
-import { RetroWindow } from "@/components/RetroWindow";
+import { ImagesIcon } from "@/components/desktop/retro-icons";
+import { RetroWindow } from "@/components/retro-window";
 
-import type { DesktopImageItem } from "./imagesConfig";
-import type { TranslateFn } from "./types";
+import type { DesktopImageItem } from "../../images-config";
+import type { TranslateFn } from "../../types";
 
 interface ImagePreviewWindowProps {
   image?: DesktopImageItem;

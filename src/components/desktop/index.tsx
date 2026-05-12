@@ -6,25 +6,25 @@ import {
   DESKTOP_TASKBAR_HEIGHT,
   DesktopIcon,
   type DesktopIconPosition,
-} from "@/components/DesktopIcon";
+} from "@/components/desktop-icon";
 import { FloatingAssistant } from "@/components/floating-assistant/floating-assistant";
-import { RetroWindow } from "@/components/RetroWindow";
-import { Taskbar } from "@/components/Taskbar";
+import { RetroWindow } from "@/components/retro-window";
+import { Taskbar } from "@/components/taskbar";
 import { PROJECTS_DATA } from "@/data/projects";
-import { useTranslation } from "@/hooks/useTranslation";
-import { retroTheme } from "@/theme/retroTheme";
+import { useTranslation } from "@/hooks/use-translation";
+import { retroTheme } from "@/theme/retro-theme";
 
-import { DesktopWindowContent } from "./DesktopWindowContent";
-import { ImagePreviewWindow } from "./ImagePreviewWindow";
-import { ProjectPreviewWindow } from "./ProjectPreviewWindow";
+import { DesktopWindowContent } from "./desktop-window-content";
+import { ImagePreviewWindow } from "./windows/images/image-preview-window";
+import { ProjectPreviewWindow } from "./windows/projects/project-preview-window";
 import {
   desktopWindows,
   initialIconPositions,
   initialMinimizedWindowState,
   initialWindowOrder,
   initialWindowState,
-} from "./desktopConfig";
-import { desktopImages } from "./imagesConfig";
+} from "./desktop-config";
+import { desktopImages } from "./images-config";
 import type { LocalizedText, WindowId } from "./types";
 
 const ICON_DESIGN_WIDTH = 1200;

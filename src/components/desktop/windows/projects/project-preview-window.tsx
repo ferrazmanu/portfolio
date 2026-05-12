@@ -1,10 +1,10 @@
 import Image from "next/image";
 
-import { ProjectsIcon } from "@/components/Desktop/RetroIcons";
-import { RetroWindow } from "@/components/RetroWindow";
+import { ProjectsIcon } from "@/components/desktop/retro-icons";
+import { RetroWindow } from "@/components/retro-window";
 import { PROJECTS_DATA } from "@/data/projects";
 
-import type { TranslateFn } from "./types";
+import type { TranslateFn } from "../../types";
 
 type Project = (typeof PROJECTS_DATA)[number];
 

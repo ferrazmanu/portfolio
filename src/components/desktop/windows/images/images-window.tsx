@@ -1,7 +1,7 @@
 import Image from "next/image";
 
-import { desktopImages } from "./imagesConfig";
-import type { TranslateFn } from "./types";
+import { desktopImages } from "../../images-config";
+import type { TranslateFn } from "../../types";
 
 interface ImagesWindowProps {
   t: TranslateFn;
