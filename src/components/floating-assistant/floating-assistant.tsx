@@ -556,7 +556,7 @@ export const FloatingAssistant = ({
 
       <div
         ref={assistantRef}
-        className="fixed z-[120] h-20 w-20 touch-none select-none font-retro"
+        className="fixed z-[120] h-[6vw] w-[6vw] min-h-[100px] min-w-[100px] touch-none select-none font-retro"
         style={assistantStyle}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
