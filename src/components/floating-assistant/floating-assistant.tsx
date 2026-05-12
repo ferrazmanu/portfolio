@@ -21,10 +21,7 @@ import { RetroMessage } from "@/components/retro-message";
 import { RetroMenu, type RetroMenuItemConfig } from "@/components/retro-menu";
 import { useAssistantStore } from "@/store/assistant-store";
 
-import {
-  getPokeMessage,
-  getRandomAssistantMessage,
-} from "./assistant-message-utils";
+import { getPokeMessage } from "./assistant-message-utils";
 import {
   assistantCharacters,
   assistantCharactersById,
@@ -33,6 +30,7 @@ import {
   type AssistantMessage,
 } from "./assistant-messages";
 import { PixelDissolvePresence } from "./pixel-dissolve-presence";
+import { useRandomAssistantMessage } from "./use-random-assistant-message";
 
 interface FloatingAssistantProps {
   externalMessage?: AssistantMessage;
@@ -110,8 +108,6 @@ export const FloatingAssistant = ({
   const viewportAnchorRef = useRef<HTMLDivElement>(null);
   const messageRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const lastMoveMessageIndexRef = useRef<number | null>(null);
-  const lastShakeMessageIndexRef = useRef<number | null>(null);
   const dismissTimerRef = useRef<number | null>(null);
   const lastHideRequestIdRef = useRef(assistantHideRequestId);
   const longPressTimerRef = useRef<number | null>(null);
@@ -139,6 +135,18 @@ export const FloatingAssistant = ({
 
   const selectedAssistant = assistantCharactersById[selectedAssistantId];
   const selectedMessages = selectedAssistant.messages;
+  const getRandomMoveMessage = useRandomAssistantMessage(
+    selectedMessages.move,
+    selectedAssistantId,
+  );
+  const getRandomShakeMessage = useRandomAssistantMessage(
+    selectedMessages.shake,
+    selectedAssistantId,
+  );
+  const getRandomAdviceMessage = useRandomAssistantMessage(
+    selectedMessages.advice,
+    selectedAssistantId,
+  );
   const message = translateMessage(
     activeMessage ?? selectedAssistant.initialMessage,
   );
@@ -299,8 +307,6 @@ export const FloatingAssistant = ({
 
   useEffect(() => {
     setPokeCount(0);
-    lastMoveMessageIndexRef.current = null;
-    lastShakeMessageIndexRef.current = null;
   }, [selectedAssistantId]);
 
   useIsomorphicLayoutEffect(() => {
@@ -367,28 +373,6 @@ export const FloatingAssistant = ({
 
       return nextCount;
     });
-  };
-
-  const getRandomMoveMessage = () => {
-    const result = getRandomAssistantMessage(
-      selectedMessages.move,
-      lastMoveMessageIndexRef.current,
-    );
-
-    lastMoveMessageIndexRef.current = result.index;
-
-    return result.message;
-  };
-
-  const getRandomShakeMessage = () => {
-    const result = getRandomAssistantMessage(
-      selectedMessages.shake,
-      lastShakeMessageIndexRef.current,
-    );
-
-    lastShakeMessageIndexRef.current = result.index;
-
-    return result.message;
   };
 
   const openAssistantMenu = () => {
@@ -591,9 +575,7 @@ export const FloatingAssistant = ({
   };
 
   const handleAdviceClick = () => {
-    const result = getRandomAssistantMessage(selectedMessages.advice, null);
-
-    setActiveAssistantMessage(result.message);
+    setActiveAssistantMessage(getRandomAdviceMessage());
     setIsMessageCollapsed(false);
     setIsMenuOpen(false);
   };

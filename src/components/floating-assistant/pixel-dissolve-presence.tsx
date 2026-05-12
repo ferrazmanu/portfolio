@@ -37,15 +37,20 @@ export const PixelDissolvePresence = ({
 
   if (!shouldRender) return null;
 
+  const presenceStyle =
+    state === "idle"
+      ? style
+      : {
+          ...style,
+          ...maskStyle,
+        };
+
   return (
     <div
       className={className}
       data-pixel-presence-state={state}
       {...props}
-      style={{
-        ...style,
-        ...maskStyle,
-      }}
+      style={presenceStyle}
     >
       {children}
     </div>

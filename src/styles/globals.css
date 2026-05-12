@@ -234,21 +234,20 @@ li {
   will-change: transform;
 }
 
-.assistant-pixel-presence {
-  transform: translateZ(0);
-  will-change: mask-image, -webkit-mask-image, opacity, transform, filter;
-}
-
 .assistant-message-collapsed .retro-message-body {
   display: none;
 }
 
 .assistant-pixel-presence[data-pixel-presence-state="dismissing"] {
   animation: assistant-pixel-dismissing 1100ms steps(6, end) forwards;
+  transform: translateZ(0);
+  will-change: mask-image, -webkit-mask-image, opacity, transform, filter;
 }
 
 .assistant-pixel-presence[data-pixel-presence-state="restoring"] {
   animation: assistant-pixel-restoring 900ms steps(6, end) both;
+  transform: translateZ(0);
+  will-change: mask-image, -webkit-mask-image, opacity, transform, filter;
 }
 
 @keyframes assistant-pixel-dismissing {
