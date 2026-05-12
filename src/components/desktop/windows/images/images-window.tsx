@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 import { AudioIcon, FileIcon, VideoIcon } from "@/components/retro-icons";
+import { useDesktopStore } from "@/store/desktop-store";
 import type { TranslateFn } from "../../types";
 import {
   type ImagesWindowFileItem,
@@ -10,7 +11,6 @@ import {
 
 interface ImagesWindowProps {
   t: TranslateFn;
-  onImageOpen: (imageId: string) => void;
 }
 
 const categoryLabels = {
@@ -26,7 +26,9 @@ const getFileTypeIcon = (item: ImagesWindowFileItem) => {
   return <FileIcon />;
 };
 
-export function ImagesWindow({ t, onImageOpen }: ImagesWindowProps) {
+export function ImagesWindow({ t }: ImagesWindowProps) {
+  const openImagePreview = useDesktopStore((state) => state.openImagePreview);
+
   return (
     <div className="space-y-3">
       {imagesWindowItems.length === 0 ? (
@@ -49,7 +51,7 @@ export function ImagesWindow({ t, onImageOpen }: ImagesWindowProps) {
                 disabled={!isImage}
                 onClick={() => {
                   if (isImage) {
-                    onImageOpen(item.id);
+                    openImagePreview(item.id);
                   }
                 }}
               >

@@ -11,28 +11,22 @@ import { TrashWindow } from "./windows/trash/trash-window";
 interface DesktopWindowContentProps {
   windowId: WindowId;
   t: TranslateFn;
-  onProjectPreviewOpen: (projectName: string) => void;
-  onImagePreviewOpen: (imageId: string) => void;
 }
 
 export function DesktopWindowContent({
   windowId,
   t,
-  onProjectPreviewOpen,
-  onImagePreviewOpen,
 }: DesktopWindowContentProps) {
   if (windowId === "about") {
     return <AboutWindow t={t} />;
   }
 
   if (windowId === "projects") {
-    return (
-      <ProjectListWindow t={t} onProjectPreviewOpen={onProjectPreviewOpen} />
-    );
+    return <ProjectListWindow t={t} />;
   }
 
   if (windowId === "images") {
-    return <ImagesWindow t={t} onImageOpen={onImagePreviewOpen} />;
+    return <ImagesWindow t={t} />;
   }
 
   if (windowId === "experience") {
@@ -52,7 +46,7 @@ export function DesktopWindowContent({
   }
 
   if (windowId === "trash") {
-    return <TrashWindow t={t} onImageOpen={onImagePreviewOpen} />;
+    return <TrashWindow t={t} />;
   }
 
   return <></>;

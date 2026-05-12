@@ -1,32 +1,31 @@
-import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
+import { desktopWindows } from "@/components/desktop/desktop-config";
+import type { WindowId } from "@/components/desktop/types";
 import { TranslationButton } from "@/components/translation-button";
+import { useTranslation } from "@/hooks/use-translation";
+import { useDesktopStore } from "@/store/desktop-store";
 
-export interface TaskbarWindow {
-  id: string;
-  title: string;
-  isOpen: boolean;
-  icon?: ReactNode;
-}
-
-export interface TaskbarProps {
-  windows: TaskbarWindow[];
-  menuWindows: TaskbarWindow[];
-  activeWindowId: string | null;
-  onWindowSelect: (id: string) => void;
-  onMenuEasterEgg?: () => void;
-}
-
-export function Taskbar({
-  windows,
-  menuWindows,
-  activeWindowId,
-  onWindowSelect,
-  onMenuEasterEgg,
-}: TaskbarProps) {
+export function Taskbar() {
+  const { handleTranslation } = useTranslation();
+  const openWindows = useDesktopStore((state) => state.openWindows);
+  const activeWindowId = useDesktopStore((state) => state.activeWindowId);
+  const openWindow = useDesktopStore((state) => state.openWindow);
+  const showDesktopMenuEasterEggMessage = useDesktopStore(
+    (state) => state.showDesktopMenuEasterEggMessage,
+  );
   const menuRef = useRef<HTMLDivElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
+
+  const t = ({ pt, en }: { pt: string; en: string }) =>
+    handleTranslation({ text: pt, translation: en });
+
+  const windows = desktopWindows.map((windowItem) => ({
+    id: windowItem.id,
+    title: t(windowItem.title),
+    isOpen: openWindows[windowItem.id],
+    icon: windowItem.icon,
+  }));
 
   useEffect(() => {
     if (!isMenuOpen) return;
@@ -68,8 +67,8 @@ export function Taskbar({
   const displayTime = currentDate ? time : "--:--:--";
   const displayDate = currentDate ? date : "--/--/----";
 
-  const handleMenuWindowSelect = (id: string) => {
-    onWindowSelect(id);
+  const handleMenuWindowSelect = (id: WindowId) => {
+    openWindow(id);
     setIsMenuOpen(false);
   };
 
@@ -83,7 +82,7 @@ export function Taskbar({
             </div>
 
             <div className="min-w-0 flex-1 py-1">
-              {menuWindows.map((windowItem) => (
+              {windows.map((windowItem) => (
                 <button
                   key={windowItem.id}
                   type="button"
@@ -105,7 +104,7 @@ export function Taskbar({
                 type="button"
                 className="flex h-8 w-full items-center gap-2 px-2 text-left hover:bg-[#0b6f35] hover:text-white focus:bg-[#0b6f35] focus:text-white focus:outline-none"
                 onClick={() => {
-                  onMenuEasterEgg?.();
+                  showDesktopMenuEasterEggMessage();
                   setIsMenuOpen(false);
                 }}
               >
@@ -149,7 +148,7 @@ export function Taskbar({
                   : "retro-button"
               }`}
               aria-label={`Trazer ${windowItem.title} para frente`}
-              onClick={() => onWindowSelect(windowItem.id)}
+              onClick={() => openWindow(windowItem.id)}
             >
               {windowItem.title}
             </button>

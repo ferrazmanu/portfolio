@@ -22,6 +22,10 @@ export const zamigaAssistant = {
     pt: "Zamiga ativada. Sssuporte técnico? Talvez. Veneno emocional? Com certeza.",
     en: "Zamiga activated. Technical sssupport? Maybe. Emotional venom? Definitely.",
   },
+  allMinimizedMessage: {
+    pt: "Tudo foi minimizado. Sssilêncio na área de trabalho. Vou rastejar pelos bastidores e vigiar o CSS.",
+    en: "Everything has been minimized. Sssilence on the desktop. I'll slither backstage and watch the CSS.",
+  },
   messages: {
     poke: [
       {

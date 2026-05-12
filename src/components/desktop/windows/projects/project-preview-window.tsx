@@ -3,26 +3,29 @@ import Image from "next/image";
 import { ProjectsIcon } from "@/components/retro-icons";
 import { RetroWindow } from "@/components/retro-window";
 import { PROJECTS_DATA } from "@/data/projects";
+import { useTranslation } from "@/hooks/use-translation";
+import { useDesktopStore } from "@/store/desktop-store";
 
-import type { TranslateFn } from "../../types";
+export function ProjectPreviewWindow() {
+  const { handleTranslation } = useTranslation();
+  const selectedProjectName = useDesktopStore(
+    (state) => state.selectedProjectName,
+  );
+  const projectPreviewZIndex = useDesktopStore(
+    (state) => state.projectPreviewZIndex,
+  );
+  const closeProjectPreview = useDesktopStore(
+    (state) => state.closeProjectPreview,
+  );
+  const bringProjectPreviewToFront = useDesktopStore(
+    (state) => state.bringProjectPreviewToFront,
+  );
+  const project = selectedProjectName
+    ? PROJECTS_DATA.find((projectItem) => projectItem.name === selectedProjectName)
+    : undefined;
+  const t = ({ pt, en }: { pt: string; en: string }) =>
+    handleTranslation({ text: pt, translation: en });
 
-type Project = (typeof PROJECTS_DATA)[number];
-
-interface ProjectPreviewWindowProps {
-  project?: Project;
-  t: TranslateFn;
-  zIndex: number;
-  onClose: () => void;
-  onFocus: () => void;
-}
-
-export function ProjectPreviewWindow({
-  project,
-  t,
-  zIndex,
-  onClose,
-  onFocus,
-}: ProjectPreviewWindowProps) {
   return (
     <RetroWindow
       key={project?.name ?? "project-preview"}
@@ -34,11 +37,11 @@ export function ProjectPreviewWindow({
       }
       icon={<ProjectsIcon />}
       isOpen={Boolean(project)}
-      onMinimize={onClose}
-      onClose={onClose}
-      onFocus={onFocus}
+      onMinimize={closeProjectPreview}
+      onClose={closeProjectPreview}
+      onFocus={bringProjectPreviewToFront}
       sizePreset="lg"
-      zIndex={zIndex}
+      zIndex={projectPreviewZIndex}
     >
       {project && (
         <div className="flex h-full min-h-[260px] flex-col gap-2">

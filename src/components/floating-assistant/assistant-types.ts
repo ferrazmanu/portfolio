@@ -21,5 +21,6 @@ export interface AssistantCharacter {
   ariaLabel: AssistantMessage;
   initialMessage: AssistantMessage;
   activationMessage?: AssistantMessage;
+  allMinimizedMessage?: AssistantMessage;
   messages: AssistantCharacterMessages;
 }

@@ -2,18 +2,19 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { PROJECTS_DATA } from "@/data/projects";
+import { useDesktopStore } from "@/store/desktop-store";
 
 import type { TranslateFn } from "../../types";
 
 interface ProjectListWindowProps {
   t: TranslateFn;
-  onProjectPreviewOpen: (projectName: string) => void;
 }
 
-export function ProjectListWindow({
-  t,
-  onProjectPreviewOpen,
-}: ProjectListWindowProps) {
+export function ProjectListWindow({ t }: ProjectListWindowProps) {
+  const openProjectPreview = useDesktopStore(
+    (state) => state.openProjectPreview,
+  );
+
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-[24px_1fr_120px] border-b border-black pb-1 text-xs font-bold uppercase">
@@ -36,7 +37,7 @@ export function ProjectListWindow({
               pt: "Abrir imagem do projeto",
               en: "Open project image",
             })} ${project.name}`}
-            onClick={() => onProjectPreviewOpen(project.name)}
+            onClick={() => openProjectPreview(project.name)}
           >
             <Image
               src={project.imageUrl}

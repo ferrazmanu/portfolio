@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 import { AudioIcon, FileIcon, VideoIcon } from "@/components/retro-icons";
+import { useDesktopStore } from "@/store/desktop-store";
 import type { TranslateFn } from "../../types";
 import {
   isTrashImageItem,
@@ -9,7 +10,6 @@ import {
 } from "./trash-config";
 
 interface TrashWindowProps {
-  onImageOpen: (imageId: string) => void;
   t: TranslateFn;
 }
 
@@ -20,7 +20,9 @@ const getTrashFileIcon = (item: TrashFileItem) => {
   return <FileIcon />;
 };
 
-export function TrashWindow({ onImageOpen, t }: TrashWindowProps) {
+export function TrashWindow({ t }: TrashWindowProps) {
+  const openImagePreview = useDesktopStore((state) => state.openImagePreview);
+
   return (
     <div className="space-y-3">
       {trashItems.length === 0 ? (
@@ -43,7 +45,7 @@ export function TrashWindow({ onImageOpen, t }: TrashWindowProps) {
                 disabled={!isImage}
                 onClick={() => {
                   if (isImage) {
-                    onImageOpen(item.id);
+                    openImagePreview(item.id);
                   }
                 }}
               >

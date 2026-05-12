@@ -22,6 +22,10 @@ export const astrocatAssistant = {
     pt: "Astrocat ativado. Vou supervisionar tudo com julgamento silencioso.",
     en: "Astrocat activated. I'll supervise everything with silent judgment.",
   },
+  allMinimizedMessage: {
+    pt: "Tudo minimizado. Excelente. Finalmente uma superfície plana para uma soneca e zero respeito pelos meus bigodes.",
+    en: "Everything minimized. Excellent. Finally a flat surface for a nap and zero respect for my whiskers.",
+  },
   messages: {
     poke: [
       {

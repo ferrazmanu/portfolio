@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import {
   DESKTOP_ICON_HEIGHT,
@@ -7,32 +7,28 @@ import {
   DesktopIcon,
   type DesktopIconPosition,
 } from "@/components/desktop-icon";
+import { assistantCharactersById } from "@/components/floating-assistant/assistant-messages";
 import { FloatingAssistant } from "@/components/floating-assistant/floating-assistant";
 import { ImagePreviewWindow } from "@/components/image-preview-window";
 import { RetroWindow } from "@/components/retro-window";
 import { Taskbar } from "@/components/taskbar";
-import { PROJECTS_DATA } from "@/data/projects";
 import { useTranslation } from "@/hooks/use-translation";
+import { useAssistantStore } from "@/store/assistant-store";
+import { useDesktopStore } from "@/store/desktop-store";
 import { retroTheme } from "@/theme/retro-theme";
 
 import { DesktopWindowContent } from "./desktop-window-content";
-import { ProjectPreviewWindow } from "./windows/projects/project-preview-window";
-import {
-  desktopWindows,
-  initialIconPositions,
-  initialMinimizedWindowState,
-  initialWindowOrder,
-  initialWindowState,
-} from "./desktop-config";
+import { desktopWindows, initialIconPositions } from "./desktop-config";
 import type { LocalizedText, WindowId } from "./types";
-import {
-  imagesWindowItems,
-  imagesWindowPreviewItems,
-} from "./windows/images/images-config";
-import { trashItems, trashPreviewItems } from "./windows/trash/trash-config";
+import { ProjectPreviewWindow } from "./windows/projects/project-preview-window";
 
 const ICON_DESIGN_WIDTH = 1200;
 const ICON_DESIGN_HEIGHT = 620;
+
+const genericAllMinimizedMessage: LocalizedText = {
+  pt: "Tudo minimizado. Nova fase: contemplar o vazio organizado.",
+  en: "Everything minimized. New phase: contemplating the organized void.",
+};
 
 const clampIconPosition = (
   position: DesktopIconPosition,
@@ -72,95 +68,84 @@ const getResponsiveIconPositions = (): Record<WindowId, DesktopIconPosition> =>
     initialIconPositions,
   );
 
+const getTopVisibleWindowId = (
+  openWindows: Record<WindowId, boolean>,
+  minimizedWindows: Record<WindowId, boolean>,
+  windowOrder: Record<WindowId, number>,
+): WindowId | null => {
+  const visibleWindows = desktopWindows.filter(
+    (windowItem) =>
+      openWindows[windowItem.id] && !minimizedWindows[windowItem.id],
+  );
+
+  if (visibleWindows.length === 0) return null;
+
+  return visibleWindows.reduce((topWindow, windowItem) =>
+    windowOrder[windowItem.id] > windowOrder[topWindow.id]
+      ? windowItem
+      : topWindow,
+  ).id;
+};
+
 export function Desktop() {
   const { handleTranslation } = useTranslation();
-  const [openWindows, setOpenWindows] =
-    useState<Record<WindowId, boolean>>(initialWindowState);
-  const [minimizedWindows, setMinimizedWindows] = useState<
-    Record<WindowId, boolean>
-  >(initialMinimizedWindowState);
-  const [activeWindowId, setActiveWindowId] = useState<WindowId>("about");
-  const [iconPositions, setIconPositions] =
-    useState<Record<WindowId, DesktopIconPosition>>(initialIconPositions);
-  const [windowOrder, setWindowOrder] =
-    useState<Record<WindowId, number>>(initialWindowOrder);
-  const [selectedProjectName, setSelectedProjectName] = useState<string | null>(
-    null,
+  const selectedAssistantId = useAssistantStore(
+    (state) => state.selectedAssistantId,
   );
-  const [projectPreviewZIndex, setProjectPreviewZIndex] = useState(90);
-  const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
-  const [imagePreviewZIndex, setImagePreviewZIndex] = useState(95);
-  const [assistantExternalMessage, setAssistantExternalMessage] =
-    useState<LocalizedText | null>(null);
+  const openWindows = useDesktopStore((state) => state.openWindows);
+  const minimizedWindows = useDesktopStore((state) => state.minimizedWindows);
+  const activeWindowId = useDesktopStore((state) => state.activeWindowId);
+  const iconPositions = useDesktopStore((state) => state.iconPositions);
+  const windowOrder = useDesktopStore((state) => state.windowOrder);
+  const selectedProjectName = useDesktopStore(
+    (state) => state.selectedProjectName,
+  );
+  const selectedImageId = useDesktopStore((state) => state.selectedImageId);
+  const assistantExternalMessage = useDesktopStore(
+    (state) => state.assistantExternalMessage,
+  );
+  const setActiveWindowId = useDesktopStore(
+    (state) => state.setActiveWindowId,
+  );
+  const setIconPositions = useDesktopStore((state) => state.setIconPositions);
+  const setAssistantExternalMessage = useDesktopStore(
+    (state) => state.setAssistantExternalMessage,
+  );
+  const bringWindowToFront = useDesktopStore(
+    (state) => state.bringWindowToFront,
+  );
+  const openWindow = useDesktopStore((state) => state.openWindow);
+  const minimizeWindow = useDesktopStore((state) => state.minimizeWindow);
+  const closeWindow = useDesktopStore((state) => state.closeWindow);
+  const updateIconPosition = useDesktopStore(
+    (state) => state.updateIconPosition,
+  );
   const hasDraggedIconRef = useRef(false);
 
   const t = ({ pt, en }: LocalizedText) =>
     handleTranslation({ text: pt, translation: en });
 
-  const getWindowAssistantMessage = (id: WindowId): LocalizedText => {
-    const messages: Record<WindowId, LocalizedText> = {
-      about: {
-        pt: "Essa é a janela principal. Sim, a Manu sabe React, TypeScript e Next.js. Eu supervisionei.",
-        en: "This is the main window. Yes, she knows React, TypeScript, and Next.js. I supervised.",
-      },
-      projects: {
-        pt: "Projetos abertos. Clique nas imagens se quiser ver as prévias maiores. Eu gosto de thumbnails dramáticas.",
-        en: "Projects opened. Click the images if you want bigger previews. I like dramatic thumbnails.",
-      },
-      images:
-        imagesWindowItems.length > 0
-          ? {
-              pt: `Clique em uma imagem para ver maior. Eu vou fingir que não estou julgando seus arquivos.`,
-              en: `Click an image to preview it. I'll pretend I'm not judging your files.`,
-            }
-          : {
-              pt: "Pasta de imagens aberta e completamente vazia. Um minimalismo ousado. Quase uma ameaça.",
-              en: "Images folder opened and completely empty. Bold minimalism. Almost threatening.",
-            },
-      experience: {
-        pt: "Linha do tempo profissional. Spoiler: tem front-end, produto e bastante café implícito.",
-        en: "Professional timeline. Spoiler: front-end, product work, and plenty of implied coffee.",
-      },
-      skills: {
-        pt: "Skills carregadas. Eu teria adicionado 'convencer gatos a cooperar', mas faltou validação técnica.",
-        en: "Skills loaded. I would add 'convincing cats to cooperate', but it lacks technical validation.",
-      },
-      contact: {
-        pt: "Contato aberto. Uma boa janela para chamar a Manu antes que eu mude de ideia.",
-        en: "Contact opened. A good window to reach Manu before I change my mind.",
-      },
-      resume: {
-        pt: "Currículo em PDF. Formal, direto e com menos comentários sarcásticos do que eu gostaria.",
-        en: "Resume in PDF. Formal, direct, and with fewer sarcastic comments than I would like.",
-      },
-      trash:
-        trashItems.length > 0
-          ? {
-              pt: `Nada diz nostalgia como arquivo descartado com potencial dramático.`,
-              en: `Nothing says nostalgia like discarded files with dramatic potential.`,
-            }
-          : {
-              pt: "A lixeira está vazia. Ao contrário da minha lista de opiniões sobre layouts.",
-              en: "Trash is empty. Unlike my list of opinions about layouts.",
-            },
-    };
-
-    return messages[id];
-  };
-
-  const selectedProject = selectedProjectName
-    ? PROJECTS_DATA.find((project) => project.name === selectedProjectName)
-    : undefined;
-  const selectedImage = selectedImageId
-    ? [...imagesWindowPreviewItems, ...trashPreviewItems].find(
-        (image) => image.id === selectedImageId,
-      )
-    : undefined;
+  const selectedAssistant = assistantCharactersById[selectedAssistantId];
+  const allMinimizedAssistantMessage =
+    selectedAssistant.allMinimizedMessage ?? genericAllMinimizedMessage;
+  const hasVisibleDesktopWindow = desktopWindows.some(
+    (windowItem) =>
+      openWindows[windowItem.id] && !minimizedWindows[windowItem.id],
+  );
+  const hasMinimizedDesktopWindow = desktopWindows.some(
+    (windowItem) =>
+      openWindows[windowItem.id] && minimizedWindows[windowItem.id],
+  );
+  const areAllDesktopWindowsMinimized =
+    hasMinimizedDesktopWindow &&
+    !hasVisibleDesktopWindow &&
+    !selectedProjectName &&
+    !selectedImageId;
 
   const hasOpenWindow =
     Object.values(openWindows).some(Boolean) ||
-    Boolean(selectedProject) ||
-    Boolean(selectedImage);
+    Boolean(selectedProjectName) ||
+    Boolean(selectedImageId);
 
   useEffect(() => {
     if (hasOpenWindow) return;
@@ -169,7 +154,17 @@ export function Desktop() {
       pt: "Todas as janelas foram fechadas. Minimalismo radical ou você só está me deixando sozinho?",
       en: "All windows are closed. Radical minimalism, or are you just leaving me alone?",
     });
-  }, [hasOpenWindow]);
+  }, [hasOpenWindow, setAssistantExternalMessage]);
+
+  useEffect(() => {
+    if (!areAllDesktopWindowsMinimized) return;
+
+    setAssistantExternalMessage(allMinimizedAssistantMessage);
+  }, [
+    allMinimizedAssistantMessage,
+    areAllDesktopWindowsMinimized,
+    setAssistantExternalMessage,
+  ]);
 
   useEffect(() => {
     const updateResponsiveIconPositions = () => {
@@ -196,97 +191,27 @@ export function Desktop() {
 
     return () =>
       window.removeEventListener("resize", updateResponsiveIconPositions);
-  }, []);
+  }, [setIconPositions]);
 
-  const bringToFront = (id: WindowId) => {
-    setActiveWindowId(id);
-    setWindowOrder((currentOrder) => ({
-      ...currentOrder,
-      [id]: Math.max(...Object.values(currentOrder)) + 1,
-    }));
-  };
+  useEffect(() => {
+    if (
+      activeWindowId &&
+      openWindows[activeWindowId] &&
+      !minimizedWindows[activeWindowId]
+    ) {
+      return;
+    }
 
-  const openWindow = (id: WindowId) => {
-    setOpenWindows((currentWindows) => ({ ...currentWindows, [id]: true }));
-    setMinimizedWindows((currentWindows) => ({
-      ...currentWindows,
-      [id]: false,
-    }));
-    bringToFront(id);
-    setAssistantExternalMessage(getWindowAssistantMessage(id));
-  };
-
-  const minimizeWindow = (id: WindowId) => {
-    setMinimizedWindows((currentWindows) => ({
-      ...currentWindows,
-      [id]: true,
-    }));
-  };
-
-  const closeWindow = (id: WindowId) => {
-    setOpenWindows((currentWindows) => ({ ...currentWindows, [id]: false }));
-    setMinimizedWindows((currentWindows) => ({
-      ...currentWindows,
-      [id]: false,
-    }));
-  };
-
-  const updateIconPosition = (id: string, position: DesktopIconPosition) => {
-    if (!desktopWindows.some((windowItem) => windowItem.id === id)) return;
-
-    hasDraggedIconRef.current = true;
-    setIconPositions((currentPositions) => ({
-      ...currentPositions,
-      [id as WindowId]: position,
-    }));
-  };
-
-  const openProjectPreview = (projectName: string) => {
-    setSelectedProjectName(projectName);
-    setAssistantExternalMessage({
-      pt: `Abrindo imagem de ${projectName}. Muito profissional. Muito pixels. Aprovado.`,
-      en: `Opening ${projectName}'s image. Very professional. Very pixels. Approved.`,
-    });
-    setProjectPreviewZIndex(
-      Math.max(...Object.values(windowOrder), projectPreviewZIndex) + 1,
+    setActiveWindowId(
+      getTopVisibleWindowId(openWindows, minimizedWindows, windowOrder),
     );
-  };
-
-  const openImagePreview = (imageId: string) => {
-    const image = [...imagesWindowPreviewItems, ...trashPreviewItems].find(
-      (item) => item.id === imageId,
-    );
-
-    setSelectedImageId(imageId);
-    setAssistantExternalMessage({
-      pt: image
-        ? `Abrindo ${image.title}.`
-        : "Abrindo imagem misteriosa. Isso nunca deu problema em computadores antigos.",
-      en: image
-        ? `Opening ${image.title}.`
-        : "Opening mysterious image. This never caused trouble on old computers.",
-    });
-    setImagePreviewZIndex(
-      Math.max(
-        ...Object.values(windowOrder),
-        projectPreviewZIndex,
-        imagePreviewZIndex,
-      ) + 1,
-    );
-  };
-
-  const bringProjectPreviewToFront = () => {
-    setProjectPreviewZIndex(
-      Math.max(...Object.values(windowOrder), projectPreviewZIndex) + 1,
-    );
-  };
-
-  const taskbarWindows = desktopWindows.map((windowItem) => ({
-    id: windowItem.id,
-    title: t(windowItem.title),
-    isOpen: openWindows[windowItem.id],
-    icon: windowItem.icon,
-  }));
+  }, [
+    activeWindowId,
+    minimizedWindows,
+    openWindows,
+    setActiveWindowId,
+    windowOrder,
+  ]);
 
   return (
     <main
@@ -310,7 +235,10 @@ export function Desktop() {
             label={t(windowItem.label)}
             icon={windowItem.icon}
             position={iconPositions[windowItem.id]}
-            onPositionChange={updateIconPosition}
+            onPositionChange={(id, position) => {
+              hasDraggedIconRef.current = true;
+              updateIconPosition(id, position);
+            }}
             onOpen={() => openWindow(windowItem.id)}
           />
         ))}
@@ -331,70 +259,22 @@ export function Desktop() {
           isMinimized={minimizedWindows[windowItem.id]}
           onMinimize={() => minimizeWindow(windowItem.id)}
           onClose={() => closeWindow(windowItem.id)}
-          onFocus={() => bringToFront(windowItem.id)}
+          onFocus={() => bringWindowToFront(windowItem.id)}
           defaultPosition={
             windowItem.id === "about" ? undefined : windowItem.position
           }
           sizePreset={windowItem.sizePreset}
           zIndex={windowOrder[windowItem.id]}
         >
-          <DesktopWindowContent
-            windowId={windowItem.id}
-            t={t}
-            onProjectPreviewOpen={openProjectPreview}
-            onImagePreviewOpen={openImagePreview}
-          />
+          <DesktopWindowContent windowId={windowItem.id} t={t} />
         </RetroWindow>
       ))}
 
-      <ProjectPreviewWindow
-        project={selectedProject}
-        t={t}
-        zIndex={projectPreviewZIndex}
-        onClose={() => setSelectedProjectName(null)}
-        onFocus={bringProjectPreviewToFront}
-      />
+      <ProjectPreviewWindow />
 
-      <ImagePreviewWindow
-        image={selectedImage}
-        t={t}
-        zIndex={imagePreviewZIndex}
-        onClose={() => setSelectedImageId(null)}
-        onFocus={() =>
-          setImagePreviewZIndex(
-            Math.max(
-              ...Object.values(windowOrder),
-              projectPreviewZIndex,
-              imagePreviewZIndex,
-            ) + 1,
-          )
-        }
-      />
+      <ImagePreviewWindow />
 
-      <Taskbar
-        menuWindows={taskbarWindows}
-        windows={taskbarWindows}
-        activeWindowId={activeWindowId}
-        onWindowSelect={(id) => {
-          const windowId = id as WindowId;
-          setOpenWindows((currentWindows) => ({
-            ...currentWindows,
-            [windowId]: true,
-          }));
-          setMinimizedWindows((currentWindows) => ({
-            ...currentWindows,
-            [windowId]: false,
-          }));
-          bringToFront(windowId);
-          setAssistantExternalMessage(getWindowAssistantMessage(windowId));
-        }}
-        onMenuEasterEgg={() =>
-          setAssistantExternalMessage({
-            pt: "Easter egg encontrado: assistentes também sabem debugar CSS. Às vezes.",
-            en: "Easter egg found: assistants can debug CSS too. Sometimes.",
-          })
-        }
-      />
+      <Taskbar />
     </main>
   );
 }
