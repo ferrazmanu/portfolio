@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import SnakeGif from "@/assets/gifs/snake.gif";
+import SnakeGif from "@/assets/gifs/codesnake.gif";
 
 export const SlytherinSnake = () => {
   return (

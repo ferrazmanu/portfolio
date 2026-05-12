@@ -7,7 +7,7 @@ import {
   DesktopIcon,
   type DesktopIconPosition,
 } from "@/components/DesktopIcon";
-import { FloatingCat } from "@/components/FloatingCat";
+import { FloatingAssistant } from "@/components/floating-assistant/floating-assistant";
 import { RetroWindow } from "@/components/RetroWindow";
 import { Taskbar } from "@/components/Taskbar";
 import { PROJECTS_DATA } from "@/data/projects";
@@ -294,11 +294,7 @@ export function Desktop() {
         ))}
       </div>
 
-      <FloatingCat
-        initialMessage={{
-          pt: "Oi! Clique nos ícones para abrir as janelas. Eu fico por aqui caso precise de ajuda. Tecnicamente. Na prática, sou um gato.",
-          en: "Hi! Click the icons to open windows. I'll hang around in case you need help. Technically. In practice, I'm a cat.",
-        }}
+      <FloatingAssistant
         externalMessage={assistantExternalMessage ?? undefined}
         translateMessage={t}
       />

@@ -118,6 +118,29 @@ li {
   mix-blend-mode: screen;
 }
 
+@keyframes assistant-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1deg);
+  }
+
+  50% {
+    transform: translateY(-8px) rotate(1deg);
+  }
+}
+
+.floating-assistant-sprite {
+  animation: assistant-float 3.4s ease-in-out infinite;
+  transform-origin: 50% 80%;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .floating-assistant-sprite {
+    animation: none;
+  }
+}
+
 .retro-scrollbar {
   scrollbar-color: #808080 #dfdfdf;
   scrollbar-width: thin;
