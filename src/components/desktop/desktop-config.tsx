@@ -69,8 +69,8 @@ export const desktopWindows: DesktopWindowConfig[] = [
   },
   {
     id: "resume",
-    title: { pt: "Resume.pdf", en: "Resume.pdf" },
-    label: { pt: "Resume.pdf", en: "Resume.pdf" },
+    title: { pt: "Currículo", en: "Resume" },
+    label: { pt: "Currículo", en: "Resume" },
     icon: <ResumeIcon />,
     iconPosition: { x: 418, y: 398 },
     position: { x: 160, y: 210 },
