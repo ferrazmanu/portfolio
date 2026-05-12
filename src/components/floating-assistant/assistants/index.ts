@@ -1,12 +1,12 @@
 import { astrocatAssistant } from "./astrocat/astrocat";
-import { zamandaAssistant } from "./zamanda/zamanda";
+import { zamigaAssistant } from "./zamiga/zamiga";
 // assistant scaffold imports
 
 import type { AssistantCharacter } from "../assistant-types";
 
 export const assistantCharacters = [
   astrocatAssistant,
-  zamandaAssistant,
+  zamigaAssistant,
   // assistant scaffold list
 ] as const satisfies readonly AssistantCharacter[];
 
