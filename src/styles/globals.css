@@ -9,10 +9,96 @@
   --retro-border-light: #ffffff;
   --retro-border-dark: #203026;
   --retro-text: #d6ffd8;
+  --retro-scrollbar-track: #dfdfdf;
+  --retro-scrollbar-thumb: #b8b8b8;
+  --retro-scrollbar-shadow: #808080;
+  --retro-scrollbar-dark: #404040;
 }
 
 * {
   box-sizing: border-box;
+  scrollbar-color: var(--retro-scrollbar-shadow) var(--retro-scrollbar-track);
+  scrollbar-width: auto;
+}
+
+*::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-corner {
+  background: var(--retro-scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb {
+  min-width: 16px;
+  min-height: 16px;
+  background: var(--retro-scrollbar-thumb);
+  border-width: 2px;
+  border-style: solid;
+  border-top-color: var(--retro-border-light);
+  border-left-color: var(--retro-border-light);
+  border-right-color: var(--retro-scrollbar-dark);
+  border-bottom-color: var(--retro-scrollbar-dark);
+  box-shadow:
+    inset -1px -1px 0 var(--retro-scrollbar-shadow),
+    inset 1px 1px 0 #eeeeee;
+}
+
+*::-webkit-scrollbar-button {
+  width: 16px;
+  height: 16px;
+  background-color: var(--retro-scrollbar-track);
+  border-width: 2px;
+  border-style: solid;
+  border-top-color: var(--retro-border-light);
+  border-left-color: var(--retro-border-light);
+  border-right-color: var(--retro-scrollbar-dark);
+  border-bottom-color: var(--retro-scrollbar-dark);
+}
+
+*::-webkit-scrollbar-button:active {
+  border-top-color: var(--retro-scrollbar-dark);
+  border-left-color: var(--retro-scrollbar-dark);
+  border-right-color: var(--retro-border-light);
+  border-bottom-color: var(--retro-border-light);
+}
+
+*::-webkit-scrollbar-button:vertical:decrement {
+  background:
+    linear-gradient(45deg, transparent 52%, #111111 52%) 4px 5px / 4px 4px
+      no-repeat,
+    linear-gradient(135deg, #111111 48%, transparent 48%) 8px 5px / 4px 4px
+      no-repeat,
+    var(--retro-scrollbar-track);
+}
+
+*::-webkit-scrollbar-button:vertical:increment {
+  background:
+    linear-gradient(135deg, transparent 52%, #111111 52%) 4px 7px / 4px 4px
+      no-repeat,
+    linear-gradient(45deg, #111111 48%, transparent 48%) 8px 7px / 4px 4px
+      no-repeat,
+    var(--retro-scrollbar-track);
+}
+
+*::-webkit-scrollbar-button:horizontal:decrement {
+  background:
+    linear-gradient(135deg, transparent 52%, #111111 52%) 5px 4px / 4px 4px
+      no-repeat,
+    linear-gradient(45deg, #111111 48%, transparent 48%) 5px 8px / 4px 4px
+      no-repeat,
+    var(--retro-scrollbar-track);
+}
+
+*::-webkit-scrollbar-button:horizontal:increment {
+  background:
+    linear-gradient(45deg, transparent 52%, #111111 52%) 7px 4px / 4px 4px
+      no-repeat,
+    linear-gradient(135deg, #111111 48%, transparent 48%) 7px 8px / 4px 4px
+      no-repeat,
+    var(--retro-scrollbar-track);
 }
 
 html,
