@@ -112,7 +112,7 @@ export function Taskbar({
                 <span className="retro-border-inset flex h-5 w-5 items-center justify-center bg-white text-[11px] text-black">
                   ?
                 </span>
-                <span className="truncate font-bold">secret.cat</span>
+                <span className="truncate font-bold">secret.assistant</span>
               </button>
             </div>
           </div>

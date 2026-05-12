@@ -368,8 +368,8 @@ export function Desktop() {
         }}
         onMenuEasterEgg={() =>
           setAssistantExternalMessage({
-            pt: "Easter egg encontrado: gatos também sabem debugar CSS. Às vezes.",
-            en: "Easter egg found: cats can debug CSS too. Sometimes.",
+            pt: "Easter egg encontrado: assistentes também sabem debugar CSS. Às vezes.",
+            en: "Easter egg found: assistants can debug CSS too. Sometimes.",
           })
         }
       />
