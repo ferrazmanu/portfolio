@@ -1,11 +1,11 @@
 import type { TranslateFn } from "../../types";
 import { skillGroups } from "./skills-config";
 
-interface SkillsContentProps {
+interface SkillsWindowProps {
   t: TranslateFn;
 }
 
-export function SkillsContent({ t }: SkillsContentProps) {
+export function SkillsWindow({ t }: SkillsWindowProps) {
   return (
     <div className="grid gap-3 sm:grid-cols-2">
       {skillGroups.map((group) => (

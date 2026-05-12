@@ -2,11 +2,11 @@ import Link from "next/link";
 
 import type { TranslateFn } from "../../types";
 
-interface ContactContentProps {
+interface ContactWindowProps {
   t: TranslateFn;
 }
 
-export function ContactContent({ t }: ContactContentProps) {
+export function ContactWindow({ t }: ContactWindowProps) {
   return (
     <div className="space-y-3">
       <p className="text-sm font-bold">

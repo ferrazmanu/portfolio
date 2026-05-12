@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { ProjectsIcon } from "@/components/desktop/retro-icons";
+import { ProjectsIcon } from "@/components/retro-icons";
 import { RetroWindow } from "@/components/retro-window";
 import { PROJECTS_DATA } from "@/data/projects";
 
@@ -37,7 +37,7 @@ export function ProjectPreviewWindow({
       onMinimize={onClose}
       onClose={onClose}
       onFocus={onFocus}
-      defaultSize={{ width: 720, height: 460 }}
+      sizePreset="lg"
       zIndex={zIndex}
     >
       {project && (

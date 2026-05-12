@@ -1,10 +1,10 @@
 import type { TranslateFn } from "../../types";
 
-interface AboutContentProps {
+interface AboutWindowProps {
   t: TranslateFn;
 }
 
-export function AboutContent({ t }: AboutContentProps) {
+export function AboutWindow({ t }: AboutWindowProps) {
   return (
     <div className="space-y-3">
       <h3 className="text-base font-bold">Manuela Ferraz</h3>

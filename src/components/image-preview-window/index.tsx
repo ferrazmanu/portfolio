@@ -1,13 +1,18 @@
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
 
-import { ImagesIcon } from "@/components/desktop/retro-icons";
+import type { LocalizedText, TranslateFn } from "@/components/desktop/types";
+import { ImagesIcon } from "@/components/retro-icons";
 import { RetroWindow } from "@/components/retro-window";
 
-import type { DesktopImageItem } from "../../images-config";
-import type { TranslateFn } from "../../types";
+export interface PreviewImageItem {
+  alt?: LocalizedText | string;
+  id: string;
+  src: StaticImageData | string;
+  title: string;
+}
 
 interface ImagePreviewWindowProps {
-  image?: DesktopImageItem;
+  image?: PreviewImageItem;
   t: TranslateFn;
   zIndex: number;
   onClose: () => void;
@@ -21,6 +26,13 @@ export function ImagePreviewWindow({
   onClose,
   onFocus,
 }: ImagePreviewWindowProps) {
+  const imageAlt =
+    typeof image?.alt === "string"
+      ? image.alt
+      : image?.alt
+        ? t(image.alt)
+        : image?.title;
+
   return (
     <RetroWindow
       key={image?.id ?? "image-preview"}
@@ -35,7 +47,7 @@ export function ImagePreviewWindow({
       onMinimize={onClose}
       onClose={onClose}
       onFocus={onFocus}
-      defaultSize={{ width: 640, height: 430 }}
+      sizePreset="lg"
       zIndex={zIndex}
     >
       {image && (
@@ -43,7 +55,7 @@ export function ImagePreviewWindow({
           <div className="retro-border-inset relative min-h-0 flex-1 bg-[#dcdcdc]">
             <Image
               src={image.src}
-              alt={image.title}
+              alt={imageAlt ?? image.title}
               fill
               className="object-contain"
               sizes="640px"

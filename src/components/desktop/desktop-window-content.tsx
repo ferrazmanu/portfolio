@@ -1,12 +1,12 @@
 import type { TranslateFn, WindowId } from "./types";
-import { AboutContent } from "./windows/about/about-content";
-import { ContactContent } from "./windows/contact/contact-content";
-import { ExperienceContent } from "./windows/experience/experience-content";
+import { AboutWindow } from "./windows/about/about-window";
+import { ContactWindow } from "./windows/contact/contact-window";
+import { ExperienceWindow } from "./windows/experience/experience-window";
 import { ImagesWindow } from "./windows/images/images-window";
 import { ProjectListWindow } from "./windows/projects/project-list-window";
-import { ResumeContent } from "./windows/resume/resume-content";
-import { SkillsContent } from "./windows/skills/skills-content";
-import { TrashContent } from "./windows/trash/trash-content";
+import { ResumeWindow } from "./windows/resume/resume-window";
+import { SkillsWindow } from "./windows/skills/skills-window";
+import { TrashWindow } from "./windows/trash/trash-window";
 
 interface DesktopWindowContentProps {
   windowId: WindowId;
@@ -22,15 +22,12 @@ export function DesktopWindowContent({
   onImagePreviewOpen,
 }: DesktopWindowContentProps) {
   if (windowId === "about") {
-    return <AboutContent t={t} />;
+    return <AboutWindow t={t} />;
   }
 
   if (windowId === "projects") {
     return (
-      <ProjectListWindow
-        t={t}
-        onProjectPreviewOpen={onProjectPreviewOpen}
-      />
+      <ProjectListWindow t={t} onProjectPreviewOpen={onProjectPreviewOpen} />
     );
   }
 
@@ -39,20 +36,24 @@ export function DesktopWindowContent({
   }
 
   if (windowId === "experience") {
-    return <ExperienceContent t={t} />;
+    return <ExperienceWindow t={t} />;
   }
 
   if (windowId === "skills") {
-    return <SkillsContent t={t} />;
+    return <SkillsWindow t={t} />;
   }
 
   if (windowId === "contact") {
-    return <ContactContent t={t} />;
+    return <ContactWindow t={t} />;
   }
 
   if (windowId === "resume") {
-    return <ResumeContent t={t} />;
+    return <ResumeWindow t={t} />;
   }
 
-  return <TrashContent t={t} />;
+  if (windowId === "trash") {
+    return <TrashWindow t={t} onImageOpen={onImagePreviewOpen} />;
+  }
+
+  return <></>;
 }

@@ -1,5 +1,5 @@
 import type { CSSProperties, PointerEvent, ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export interface RetroWindowPosition {
   x: number;
@@ -10,6 +10,8 @@ export interface RetroWindowSize {
   width: number;
   height: number;
 }
+
+export type RetroWindowSizePreset = "xs" | "sm" | "md" | "lg" | "xl";
 
 export interface RetroWindowProps {
   id: string;
@@ -23,6 +25,7 @@ export interface RetroWindowProps {
   onFocus?: () => void;
   defaultPosition?: RetroWindowPosition;
   defaultSize?: RetroWindowSize;
+  sizePreset?: RetroWindowSizePreset;
   zIndex?: number;
 }
 
@@ -44,12 +47,115 @@ interface ResizeState {
 
 const MIN_WIDTH = 320;
 const MIN_HEIGHT = 220;
+const TASKBAR_HEIGHT = 48;
+const VIEWPORT_MARGIN = 8;
+const WINDOW_DESIGN_WIDTH = 1200;
+const WINDOW_DESIGN_HEIGHT = 620;
 const DEFAULT_CENTER_POSITION = { x: 120, y: 96 };
+const RETRO_WINDOW_SIZE_PRESETS: Record<
+  RetroWindowSizePreset,
+  RetroWindowSize
+> = {
+  xs: { width: 360, height: 260 },
+  sm: { width: 440, height: 320 },
+  md: { width: 520, height: 380 },
+  lg: { width: 620, height: 440 },
+  xl: { width: 720, height: 500 },
+};
 
 const getCenteredPosition = (size: RetroWindowSize): RetroWindowPosition => ({
-  x: Math.max(12, (window.innerWidth - size.width) / 2),
-  y: Math.max(12, (window.innerHeight - size.height - 48) / 2),
+  x: Math.max(VIEWPORT_MARGIN, (window.innerWidth - size.width) / 2),
+  y: Math.max(
+    VIEWPORT_MARGIN,
+    (window.innerHeight - size.height - TASKBAR_HEIGHT) / 2,
+  ),
 });
+
+const clampValue = (value: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, value));
+
+const getViewportMaxSize = () => ({
+  width: Math.max(1, window.innerWidth - VIEWPORT_MARGIN * 2),
+  height: Math.max(
+    1,
+    window.innerHeight - TASKBAR_HEIGHT - VIEWPORT_MARGIN * 2,
+  ),
+});
+
+const getResponsiveSize = (defaultSize: RetroWindowSize): RetroWindowSize => {
+  const maxSize = getViewportMaxSize();
+  const designAvailableHeight = WINDOW_DESIGN_HEIGHT - TASKBAR_HEIGHT;
+  const responsiveWidth =
+    (defaultSize.width / WINDOW_DESIGN_WIDTH) * window.innerWidth;
+  const responsiveHeight =
+    (defaultSize.height / designAvailableHeight) *
+    (window.innerHeight - TASKBAR_HEIGHT);
+
+  return {
+    width: Math.min(
+      maxSize.width,
+      Math.max(Math.min(defaultSize.width, maxSize.width), responsiveWidth),
+    ),
+    height: Math.min(
+      maxSize.height,
+      Math.max(Math.min(defaultSize.height, maxSize.height), responsiveHeight),
+    ),
+  };
+};
+
+const getResponsivePosition = (
+  defaultPosition: RetroWindowPosition | undefined,
+  defaultSize: RetroWindowSize,
+  size: RetroWindowSize,
+): RetroWindowPosition => {
+  if (!defaultPosition) return getCenteredPosition(size);
+
+  const maxDesignX = Math.max(1, WINDOW_DESIGN_WIDTH - defaultSize.width);
+  const maxDesignY = Math.max(
+    1,
+    WINDOW_DESIGN_HEIGHT - defaultSize.height - TASKBAR_HEIGHT,
+  );
+  const maxViewportX = Math.max(
+    VIEWPORT_MARGIN,
+    window.innerWidth - size.width - VIEWPORT_MARGIN,
+  );
+  const maxViewportY = Math.max(
+    VIEWPORT_MARGIN,
+    window.innerHeight - size.height - TASKBAR_HEIGHT,
+  );
+
+  return {
+    x: clampValue(
+      (defaultPosition.x / maxDesignX) * maxViewportX,
+      VIEWPORT_MARGIN,
+      maxViewportX,
+    ),
+    y: clampValue(
+      (defaultPosition.y / maxDesignY) * maxViewportY,
+      VIEWPORT_MARGIN,
+      maxViewportY,
+    ),
+  };
+};
+
+const clampPositionToViewport = (
+  position: RetroWindowPosition,
+  size: RetroWindowSize,
+): RetroWindowPosition => {
+  const maxX = Math.max(
+    VIEWPORT_MARGIN,
+    window.innerWidth - size.width - VIEWPORT_MARGIN,
+  );
+  const maxY = Math.max(
+    VIEWPORT_MARGIN,
+    window.innerHeight - size.height - TASKBAR_HEIGHT,
+  );
+
+  return {
+    x: clampValue(position.x, VIEWPORT_MARGIN, maxX),
+    y: clampValue(position.y, VIEWPORT_MARGIN, maxY),
+  };
+};
 
 export function RetroWindow({
   id,
@@ -62,44 +168,88 @@ export function RetroWindow({
   onClose,
   onFocus,
   defaultPosition,
-  defaultSize = { width: 560, height: 420 },
+  defaultSize,
+  sizePreset = "md",
   zIndex = 1,
 }: RetroWindowProps) {
-  const shouldCalculateInitialPosition = !defaultPosition;
+  const initialSize = defaultSize ?? RETRO_WINDOW_SIZE_PRESETS[sizePreset];
   const [position, setPosition] = useState(
     defaultPosition ?? DEFAULT_CENTER_POSITION
   );
-  const [isPositionReady, setIsPositionReady] = useState(
-    Boolean(defaultPosition)
-  );
-  const [size, setSize] = useState(defaultSize);
+  const [isPositionReady, setIsPositionReady] = useState(false);
+  const [size, setSize] = useState(initialSize);
   const [dragState, setDragState] = useState<DragState | null>(null);
   const [resizeState, setResizeState] = useState<ResizeState | null>(null);
+  const hasDraggedRef = useRef(false);
+  const hasResizedRef = useRef(false);
 
   useEffect(() => {
-    if (!shouldCalculateInitialPosition) {
-      setPosition(defaultPosition);
-      setIsPositionReady(true);
-      return;
-    }
-
     if (!isOpen) {
       setIsPositionReady(false);
       return;
     }
 
+    const updateResponsiveLayout = () => {
+      const nextSize = hasResizedRef.current
+        ? {
+            width: Math.min(size.width, getViewportMaxSize().width),
+            height: Math.min(size.height, getViewportMaxSize().height),
+          }
+        : getResponsiveSize(initialSize);
+
+      setSize(nextSize);
+      setPosition((currentPosition) =>
+        hasDraggedRef.current
+          ? clampPositionToViewport(currentPosition, nextSize)
+          : getResponsivePosition(defaultPosition, initialSize, nextSize),
+      );
+      setIsPositionReady(true);
+    };
+
+    const rafId = requestAnimationFrame(updateResponsiveLayout);
+    window.addEventListener("resize", updateResponsiveLayout);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("resize", updateResponsiveLayout);
+    };
+  }, [defaultPosition, initialSize, isOpen, size.height, size.width]);
+
+  useEffect(() => {
+    if (isOpen) return;
+
+    hasDraggedRef.current = false;
+    hasResizedRef.current = false;
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen || !isMinimized) return;
+
+    setIsPositionReady(false);
+  }, [isMinimized, isOpen]);
+
+  useEffect(() => {
+    if (!isOpen || isMinimized) return;
+
     const rafId = requestAnimationFrame(() => {
-      setPosition(getCenteredPosition(defaultSize));
+      const nextSize = hasResizedRef.current
+        ? {
+            width: Math.min(size.width, getViewportMaxSize().width),
+            height: Math.min(size.height, getViewportMaxSize().height),
+          }
+        : getResponsiveSize(initialSize);
+
+      setSize(nextSize);
+      setPosition((currentPosition) =>
+        hasDraggedRef.current
+          ? clampPositionToViewport(currentPosition, nextSize)
+          : getResponsivePosition(defaultPosition, initialSize, nextSize),
+      );
       setIsPositionReady(true);
     });
 
     return () => cancelAnimationFrame(rafId);
-  }, [
-    defaultPosition,
-    defaultSize,
-    isOpen,
-    shouldCalculateInitialPosition,
-  ]);
+  }, [defaultPosition, initialSize, isMinimized, isOpen, size.height, size.width]);
 
   if (!isOpen || isMinimized || !isPositionReady) return null;
 
@@ -126,10 +276,16 @@ export function RetroWindow({
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
     if (!dragState || dragState.pointerId !== event.pointerId) return;
 
-    setPosition({
-      x: Math.max(8, dragState.originX + event.clientX - dragState.startX),
-      y: Math.max(8, dragState.originY + event.clientY - dragState.startY),
-    });
+    hasDraggedRef.current = true;
+    setPosition(
+      clampPositionToViewport(
+        {
+          x: dragState.originX + event.clientX - dragState.startX,
+          y: dragState.originY + event.clientY - dragState.startY,
+        },
+        size,
+      ),
+    );
   };
 
   const handlePointerUp = (event: PointerEvent<HTMLDivElement>) => {
@@ -154,20 +310,32 @@ export function RetroWindow({
   const handleResizePointerMove = (event: PointerEvent<HTMLButtonElement>) => {
     if (!resizeState || resizeState.pointerId !== event.pointerId) return;
 
-    const maxWidth = Math.max(MIN_WIDTH, window.innerWidth - position.x - 8);
-    const maxHeight = Math.max(
-      MIN_HEIGHT,
-      window.innerHeight - position.y - 48
+    const maxWidth = Math.max(
+      Math.min(MIN_WIDTH, window.innerWidth - position.x - VIEWPORT_MARGIN),
+      window.innerWidth - position.x - VIEWPORT_MARGIN,
     );
+    const maxHeight = Math.max(
+      Math.min(MIN_HEIGHT, window.innerHeight - position.y - TASKBAR_HEIGHT),
+      window.innerHeight - position.y - TASKBAR_HEIGHT,
+    );
+    const minWidth = Math.min(MIN_WIDTH, maxWidth);
+    const minHeight = Math.min(MIN_HEIGHT, maxHeight);
 
+    hasResizedRef.current = true;
     setSize({
       width: Math.min(
         maxWidth,
-        Math.max(MIN_WIDTH, resizeState.originWidth + event.clientX - resizeState.startX)
+        Math.max(
+          minWidth,
+          resizeState.originWidth + event.clientX - resizeState.startX,
+        ),
       ),
       height: Math.min(
         maxHeight,
-        Math.max(MIN_HEIGHT, resizeState.originHeight + event.clientY - resizeState.startY)
+        Math.max(
+          minHeight,
+          resizeState.originHeight + event.clientY - resizeState.startY,
+        ),
       ),
     });
   };

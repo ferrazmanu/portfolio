@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import type { RetroWindowSizePreset } from "@/components/retro-window";
+
 export type WindowId =
   | "about"
   | "images"
@@ -30,8 +32,5 @@ export interface DesktopWindowConfig {
     x: number;
     y: number;
   };
-  size: {
-    width: number;
-    height: number;
-  };
+  sizePreset: RetroWindowSizePreset;
 }

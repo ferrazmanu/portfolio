@@ -8,6 +8,7 @@ import {
   type DesktopIconPosition,
 } from "@/components/desktop-icon";
 import { FloatingAssistant } from "@/components/floating-assistant/floating-assistant";
+import { ImagePreviewWindow } from "@/components/image-preview-window";
 import { RetroWindow } from "@/components/retro-window";
 import { Taskbar } from "@/components/taskbar";
 import { PROJECTS_DATA } from "@/data/projects";
@@ -15,7 +16,6 @@ import { useTranslation } from "@/hooks/use-translation";
 import { retroTheme } from "@/theme/retro-theme";
 
 import { DesktopWindowContent } from "./desktop-window-content";
-import { ImagePreviewWindow } from "./windows/images/image-preview-window";
 import { ProjectPreviewWindow } from "./windows/projects/project-preview-window";
 import {
   desktopWindows,
@@ -24,19 +24,23 @@ import {
   initialWindowOrder,
   initialWindowState,
 } from "./desktop-config";
-import { desktopImages } from "./images-config";
 import type { LocalizedText, WindowId } from "./types";
+import {
+  imagesWindowItems,
+  imagesWindowPreviewItems,
+} from "./windows/images/images-config";
+import { trashItems, trashPreviewItems } from "./windows/trash/trash-config";
 
 const ICON_DESIGN_WIDTH = 1200;
 const ICON_DESIGN_HEIGHT = 620;
 
 const clampIconPosition = (
-  position: DesktopIconPosition
+  position: DesktopIconPosition,
 ): DesktopIconPosition => {
   const maxX = Math.max(0, window.innerWidth - DESKTOP_ICON_WIDTH);
   const maxY = Math.max(
     0,
-    window.innerHeight - DESKTOP_ICON_HEIGHT - DESKTOP_TASKBAR_HEIGHT
+    window.innerHeight - DESKTOP_ICON_HEIGHT - DESKTOP_TASKBAR_HEIGHT,
   );
 
   return {
@@ -54,7 +58,7 @@ const getResponsiveIconPositions = (): Record<WindowId, DesktopIconPosition> =>
       const maxViewportX = Math.max(0, window.innerWidth - DESKTOP_ICON_WIDTH);
       const maxViewportY = Math.max(
         0,
-        window.innerHeight - DESKTOP_ICON_HEIGHT - DESKTOP_TASKBAR_HEIGHT
+        window.innerHeight - DESKTOP_ICON_HEIGHT - DESKTOP_TASKBAR_HEIGHT,
       );
 
       return {
@@ -65,7 +69,7 @@ const getResponsiveIconPositions = (): Record<WindowId, DesktopIconPosition> =>
         }),
       };
     },
-    initialIconPositions
+    initialIconPositions,
   );
 
 export function Desktop() {
@@ -103,10 +107,16 @@ export function Desktop() {
         pt: "Projetos abertos. Clique nas imagens se quiser ver as prévias maiores. Eu gosto de thumbnails dramáticas.",
         en: "Projects opened. Click the images if you want bigger previews. I like dramatic thumbnails.",
       },
-      images: {
-        pt: "Pasta de imagens aberta. Aqui vivem wallpapers, previews e arquivos suspeitos com extensão .bmp.",
-        en: "Images folder opened. Wallpapers, previews, and suspicious .bmp files live here.",
-      },
+      images:
+        imagesWindowItems.length > 0
+          ? {
+              pt: `Clique em uma imagem para ver maior. Eu vou fingir que não estou julgando seus arquivos.`,
+              en: `Click an image to preview it. I'll pretend I'm not judging your files.`,
+            }
+          : {
+              pt: "Pasta de imagens aberta e completamente vazia. Um minimalismo ousado. Quase uma ameaça.",
+              en: "Images folder opened and completely empty. Bold minimalism. Almost threatening.",
+            },
       experience: {
         pt: "Linha do tempo profissional. Spoiler: tem front-end, produto e bastante café implícito.",
         en: "Professional timeline. Spoiler: front-end, product work, and plenty of implied coffee.",
@@ -123,10 +133,16 @@ export function Desktop() {
         pt: "Currículo em PDF. Formal, direto e com menos comentários sarcásticos do que eu gostaria.",
         en: "Resume in PDF. Formal, direct, and with fewer sarcastic comments than I would like.",
       },
-      trash: {
-        pt: "A lixeira está vazia. Ao contrário da minha lista de opiniões sobre layouts.",
-        en: "Trash is empty. Unlike my list of opinions about layouts.",
-      },
+      trash:
+        trashItems.length > 0
+          ? {
+              pt: `Nada diz nostalgia como arquivo descartado com potencial dramático.`,
+              en: `Nothing says nostalgia like discarded files with dramatic potential.`,
+            }
+          : {
+              pt: "A lixeira está vazia. Ao contrário da minha lista de opiniões sobre layouts.",
+              en: "Trash is empty. Unlike my list of opinions about layouts.",
+            },
     };
 
     return messages[id];
@@ -136,7 +152,9 @@ export function Desktop() {
     ? PROJECTS_DATA.find((project) => project.name === selectedProjectName)
     : undefined;
   const selectedImage = selectedImageId
-    ? desktopImages.find((image) => image.id === selectedImageId)
+    ? [...imagesWindowPreviewItems, ...trashPreviewItems].find(
+        (image) => image.id === selectedImageId,
+      )
     : undefined;
 
   const hasOpenWindow =
@@ -160,10 +178,12 @@ export function Desktop() {
           desktopWindows.reduce<Record<WindowId, DesktopIconPosition>>(
             (positions, windowItem) => ({
               ...positions,
-              [windowItem.id]: clampIconPosition(currentPositions[windowItem.id]),
+              [windowItem.id]: clampIconPosition(
+                currentPositions[windowItem.id],
+              ),
             }),
-            currentPositions
-          )
+            currentPositions,
+          ),
         );
         return;
       }
@@ -233,7 +253,9 @@ export function Desktop() {
   };
 
   const openImagePreview = (imageId: string) => {
-    const image = desktopImages.find((item) => item.id === imageId);
+    const image = [...imagesWindowPreviewItems, ...trashPreviewItems].find(
+      (item) => item.id === imageId,
+    );
 
     setSelectedImageId(imageId);
     setAssistantExternalMessage({
@@ -248,8 +270,8 @@ export function Desktop() {
       Math.max(
         ...Object.values(windowOrder),
         projectPreviewZIndex,
-        imagePreviewZIndex
-      ) + 1
+        imagePreviewZIndex,
+      ) + 1,
     );
   };
 
@@ -313,7 +335,7 @@ export function Desktop() {
           defaultPosition={
             windowItem.id === "about" ? undefined : windowItem.position
           }
-          defaultSize={windowItem.size}
+          sizePreset={windowItem.sizePreset}
           zIndex={windowOrder[windowItem.id]}
         >
           <DesktopWindowContent
@@ -343,8 +365,8 @@ export function Desktop() {
             Math.max(
               ...Object.values(windowOrder),
               projectPreviewZIndex,
-              imagePreviewZIndex
-            ) + 1
+              imagePreviewZIndex,
+            ) + 1,
           )
         }
       />

@@ -2,11 +2,11 @@ import Link from "next/link";
 
 import type { TranslateFn } from "../../types";
 
-interface ResumeContentProps {
+interface ResumeWindowProps {
   t: TranslateFn;
 }
 
-export function ResumeContent({ t }: ResumeContentProps) {
+export function ResumeWindow({ t }: ResumeWindowProps) {
   return (
     <div className="space-y-3">
       <p>

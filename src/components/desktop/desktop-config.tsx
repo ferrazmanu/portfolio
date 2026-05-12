@@ -7,7 +7,7 @@ import {
   ResumeIcon,
   SkillsIcon,
   TrashIcon,
-} from "@/components/desktop/retro-icons";
+} from "@/components/retro-icons";
 import type { DesktopIconPosition } from "@/components/desktop-icon";
 
 import type { DesktopWindowConfig, WindowId } from "./types";
@@ -20,7 +20,7 @@ export const desktopWindows: DesktopWindowConfig[] = [
     icon: <AboutIcon />,
     iconPosition: { x: 36, y: 38 },
     position: { x: 118, y: 72 },
-    size: { width: 520, height: 380 },
+    sizePreset: "sm",
   },
   {
     id: "projects",
@@ -29,7 +29,7 @@ export const desktopWindows: DesktopWindowConfig[] = [
     icon: <ProjectsIcon />,
     iconPosition: { x: 286, y: 156 },
     position: { x: 310, y: 98 },
-    size: { width: 760, height: 520 },
+    sizePreset: "xl",
   },
   {
     id: "images",
@@ -38,7 +38,7 @@ export const desktopWindows: DesktopWindowConfig[] = [
     icon: <ImagesIcon />,
     iconPosition: { x: 760, y: 44 },
     position: { x: 330, y: 112 },
-    size: { width: 680, height: 480 },
+    sizePreset: "sm",
   },
   {
     id: "experience",
@@ -47,7 +47,7 @@ export const desktopWindows: DesktopWindowConfig[] = [
     icon: <ExperienceIcon />,
     iconPosition: { x: 96, y: 310 },
     position: { x: 210, y: 146 },
-    size: { width: 620, height: 460 },
+    sizePreset: "sm",
   },
   {
     id: "skills",
@@ -56,7 +56,7 @@ export const desktopWindows: DesktopWindowConfig[] = [
     icon: <SkillsIcon />,
     iconPosition: { x: 536, y: 82 },
     position: { x: 520, y: 126 },
-    size: { width: 620, height: 460 },
+    sizePreset: "sm",
   },
   {
     id: "contact",
@@ -65,7 +65,7 @@ export const desktopWindows: DesktopWindowConfig[] = [
     icon: <ContactIcon />,
     iconPosition: { x: 940, y: 238 },
     position: { x: 380, y: 190 },
-    size: { width: 500, height: 360 },
+    sizePreset: "xs",
   },
   {
     id: "resume",
@@ -74,7 +74,7 @@ export const desktopWindows: DesktopWindowConfig[] = [
     icon: <ResumeIcon />,
     iconPosition: { x: 418, y: 398 },
     position: { x: 160, y: 210 },
-    size: { width: 440, height: 300 },
+    sizePreset: "xs",
   },
   {
     id: "trash",
@@ -83,7 +83,7 @@ export const desktopWindows: DesktopWindowConfig[] = [
     icon: <TrashIcon />,
     iconPosition: { x: 900, y: 400 },
     position: { x: 420, y: 220 },
-    size: { width: 360, height: 260 },
+    sizePreset: "xs",
   },
 ];
 

@@ -2,11 +2,11 @@ import { CAREER_DATA } from "@/data/career";
 
 import type { TranslateFn } from "../../types";
 
-interface ExperienceContentProps {
+interface ExperienceWindowProps {
   t: TranslateFn;
 }
 
-export function ExperienceContent({ t }: ExperienceContentProps) {
+export function ExperienceWindow({ t }: ExperienceWindowProps) {
   return (
     <ol className="space-y-4">
       {CAREER_DATA.map((job) => (
