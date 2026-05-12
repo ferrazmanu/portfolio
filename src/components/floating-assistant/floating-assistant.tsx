@@ -5,12 +5,20 @@ import type {
   MouseEvent,
   PointerEvent,
 } from "react";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
 import {
   usePortalPosition,
   type PortalResolverContext,
 } from "@/hooks/use-portal-position";
+import { RetroMessage } from "@/components/retro-message";
+import { RetroMenu, type RetroMenuItemConfig } from "@/components/retro-menu";
 import { useAssistantStore } from "@/store/assistant-store";
 
 import {
@@ -118,6 +126,7 @@ export const FloatingAssistant = ({
   const [messagePlacement, setMessagePlacement] = useState<"left" | "right">(
     "left",
   );
+  const [menuPlacement, setMenuPlacement] = useState<"left" | "right">("right");
 
   const resolveAssistantPosition = useCallback(
     ({ portalRect, viewportWidth, viewportHeight }: PortalResolverContext) => {
@@ -128,8 +137,7 @@ export const FloatingAssistant = ({
       const rawLeft =
         desiredPosition?.x ??
         viewportWidth - portalWidth - DEFAULT_ASSISTANT_GAP;
-      const rawTop =
-        desiredPosition?.y ?? DEFAULT_ASSISTANT_GAP;
+      const rawTop = desiredPosition?.y ?? DEFAULT_ASSISTANT_GAP;
 
       return {
         left: clampValue(
@@ -196,6 +204,7 @@ export const FloatingAssistant = ({
       const portalHeight = portalRect?.height || 0;
       const hasSpaceRight =
         viewportWidth - triggerRect.right >= portalWidth + OVERLAY_GAP;
+      setMenuPlacement(hasSpaceRight ? "right" : "left");
       const rawLeft = hasSpaceRight
         ? triggerRect.right + OVERLAY_GAP
         : triggerRect.left - portalWidth - OVERLAY_GAP;
@@ -504,10 +513,38 @@ export const FloatingAssistant = ({
     ...messagePosition,
     opacity: hasAssistantPosition && hasMessagePosition ? 1 : 0,
   };
-  const messageArrowClassName =
-    messagePlacement === "left"
-      ? "after:right-[-7px] after:border-r-2 after:border-t-2"
-      : "after:left-[-7px] after:border-b-2 after:border-l-2";
+  const messageArrowPlacement = messagePlacement === "left" ? "right" : "left";
+  const menuArrowPlacement = menuPlacement === "right" ? "left" : "right";
+
+  const menuItems: RetroMenuItemConfig[] = [
+    {
+      id: "advice",
+      icon: "?",
+      label: translateMessage({
+        pt: "Me dê um conselho",
+        en: "Give me advice",
+      }),
+      onClick: handleAdviceClick,
+    },
+    {
+      id: "switch-assistant",
+      icon: "<>",
+      label: translateMessage({
+        pt: "Trocar assistente",
+        en: "Switch assistant",
+      }),
+      onClick: () => setIsAssistantSwitcherOpen((isOpen) => !isOpen),
+    },
+  ];
+
+  const assistantSwitcherItems: RetroMenuItemConfig[] = assistantCharacters.map(
+    (assistant) => ({
+      disabled: assistant.id === selectedAssistantId,
+      id: assistant.id,
+      label: assistant.name,
+      onClick: () => handleAssistantSelect(assistant.id),
+    }),
+  );
 
   return (
     <>
@@ -544,90 +581,42 @@ export const FloatingAssistant = ({
         </button>
       </div>
 
-      <div
+      <RetroMessage
         ref={messageRef}
-        className={`retro-border fixed z-[119] bg-retro-gray p-1 font-retro text-xs leading-snug text-black shadow-retro after:absolute after:bottom-3 after:h-3 after:w-3 after:rotate-45 after:border-black after:bg-retro-gray after:content-[''] ${messageArrowClassName}`}
+        arrowPlacement={messageArrowPlacement}
         style={messageStyle}
-      >
-        <div className="retro-titlebar h-5 px-1">
-          <span className="truncate">{selectedAssistant.name}</span>
+        title={selectedAssistant.name}
+        titleAccessory={
           <span className="retro-border-inset flex h-4 w-4 items-center justify-center bg-retro-gray text-[10px] text-black">
             !
           </span>
-        </div>
-        <div className="retro-border-inset bg-white p-2">
-          <p>{message}</p>
-        </div>
-      </div>
+        }
+      >
+        <p>{message}</p>
+      </RetroMessage>
 
       {isMenuOpen ? (
-        <div
+        <RetroMenu
           ref={menuRef}
-          className="retro-border fixed z-[140] bg-retro-gray font-retro text-xs text-black shadow-retro"
+          arrowPlacement={menuArrowPlacement}
           style={menuPosition}
+          items={menuItems}
           onPointerDown={(event) => event.stopPropagation()}
-        >
-          <div className="retro-titlebar h-6">
-            <span>{selectedAssistant.name}</span>
+          title={selectedAssistant.name}
+          titleAccessory={
             <span className="retro-border-inset flex h-4 w-4 items-center justify-center bg-retro-gray text-[10px] text-black">
               ?
             </span>
-          </div>
-
-          <div className="p-1">
-            <button
-              type="button"
-              className="flex h-8 w-full items-center gap-2 px-2 text-left hover:bg-[#0b6f35] hover:text-white focus:bg-[#0b6f35] focus:text-white focus:outline-none"
-              onClick={handleAdviceClick}
-            >
-              <span className="retro-border-inset flex h-5 w-5 items-center justify-center bg-white text-black">
-                ?
-              </span>
-              <span className="truncate font-bold">
-                {translateMessage({
-                  pt: "Me dê um conselho",
-                  en: "Give me advice",
-                })}
-              </span>
-            </button>
-
-            <button
-              type="button"
-              className="flex h-8 w-full items-center gap-2 px-2 text-left hover:bg-[#0b6f35] hover:text-white focus:bg-[#0b6f35] focus:text-white focus:outline-none"
-              onClick={() => setIsAssistantSwitcherOpen((isOpen) => !isOpen)}
-            >
-              <span className="retro-border-inset flex h-5 w-5 items-center justify-center bg-white text-black">
-                ↔
-              </span>
-              <span className="truncate font-bold">
-                {translateMessage({
-                  pt: "Trocar assistente",
-                  en: "Switch assistant",
-                })}
-              </span>
-            </button>
-
-            {isAssistantSwitcherOpen ? (
-              <div className="my-1 border-t border-[#6f6f6f] bg-white pt-[2px]">
-                {assistantCharacters.map((assistant) => {
-                  const isSelected = assistant.id === selectedAssistantId;
-
-                  return (
-                    <button
-                      key={assistant.id}
-                      type="button"
-                      className="flex h-7 w-full items-center px-2 text-left font-bold hover:bg-[#0b6f35] hover:text-white focus:bg-[#0b6f35] focus:text-white focus:outline-none disabled:text-gray-500 disabled:hover:bg-transparent disabled:hover:text-gray-500"
-                      disabled={isSelected}
-                      onClick={() => handleAssistantSelect(assistant.id)}
-                    >
-                      <span className="truncate">{assistant.name}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            ) : null}
-          </div>
-        </div>
+          }
+        >
+          {isAssistantSwitcherOpen ? (
+            <RetroMenu
+              arrowPlacement={menuArrowPlacement}
+              className="static mt-1 border-t border-[#6f6f6f] bg-white pt-[2px] shadow-none after:hidden"
+              items={assistantSwitcherItems}
+            />
+          ) : null}
+        </RetroMenu>
       ) : null}
     </>
   );
