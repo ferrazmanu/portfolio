@@ -26,6 +26,10 @@ export const astrocatAssistant = {
     pt: "Tudo minimizado. Excelente. Finalmente uma superfície plana para uma soneca e zero respeito pelos meus bigodes.",
     en: "Everything minimized. Excellent. Finally a flat surface for a nap and zero respect for my whiskers.",
   },
+  farewellMessage: {
+    pt: "Tudo bem. Vou me desfazer em pixels ali no cantinho. Nem vou miar dramaticamente. Talvez um pouco.",
+    en: "Fine. I will dissolve into pixels in the corner. I will not meow dramatically. Maybe just a little.",
+  },
   messages: {
     poke: [
       {

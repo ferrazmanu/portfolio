@@ -26,6 +26,10 @@ export const zamigaAssistant = {
     pt: "Tudo foi minimizado. Sssilêncio na área de trabalho. Vou rastejar pelos bastidores e vigiar o CSS.",
     en: "Everything has been minimized. Sssilence on the desktop. I'll slither backstage and watch the CSS.",
   },
+  farewellMessage: {
+    pt: "Entendido. Vou sumir em quadradinhos, sssilenciosa e ofendida. Volto se chamar com respeito.",
+    en: "Understood. I will vanish into little squares, sssilent and offended. I will return if you call respectfully.",
+  },
   messages: {
     poke: [
       {

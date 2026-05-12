@@ -39,7 +39,9 @@ export const RetroMessage = forwardRef<HTMLDivElement, RetroMessageProps>(
           <span className="truncate">{title}</span>
           {titleAccessory}
         </div>
-        <div className="retro-border-inset bg-white p-2">{children}</div>
+        <div className="retro-message-body retro-border-inset bg-white p-2">
+          {children}
+        </div>
       </div>
     );
   },

@@ -39,7 +39,7 @@ export function ImagesWindow({ t }: ImagesWindowProps) {
           })}
         </div>
       ) : (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,200px))] justify-start gap-3">
+        <div className="grid grid-cols-4 gap-2 sm:grid-cols-[repeat(auto-fit,minmax(100px,150px))] sm:justify-start sm:gap-3">
           {imagesWindowItems.map((item) => {
             const isImage = isImagesWindowImageItem(item);
 
@@ -47,7 +47,7 @@ export function ImagesWindow({ t }: ImagesWindowProps) {
               <button
                 key={item.id}
                 type="button"
-                className="retro-border grid aspect-square min-w-0 grid-rows-[1fr_auto_auto] bg-white p-2 text-left focus:outline focus:outline-1 focus:outline-dotted focus:outline-black disabled:cursor-default"
+                className="retro-border grid aspect-square min-w-[50px] grid-rows-[1fr_auto_auto] bg-white p-1 text-left focus:outline focus:outline-1 focus:outline-dotted focus:outline-black disabled:cursor-default sm:p-2"
                 disabled={!isImage}
                 onClick={() => {
                   if (isImage) {
@@ -55,7 +55,7 @@ export function ImagesWindow({ t }: ImagesWindowProps) {
                   }
                 }}
               >
-                <span className="retro-border-inset relative mb-2 flex min-h-0 items-center justify-center bg-[#dcdcdc] text-[10px] font-bold uppercase">
+                <span className="retro-border-inset relative mb-1 flex min-h-0 items-center justify-center bg-[#dcdcdc] text-[10px] font-bold uppercase sm:mb-2">
                   {isImage ? (
                     <Image
                       src={item.src}
@@ -70,10 +70,10 @@ export function ImagesWindow({ t }: ImagesWindowProps) {
                     </span>
                   )}
                 </span>
-                <span className="block truncate text-xs font-bold">
+                <span className="block truncate text-[10px] font-bold sm:text-xs">
                   {item.title}
                 </span>
-                <span className="block text-[10px] text-[#444]">
+                <span className="block truncate text-[9px] text-[#444] sm:text-[10px]">
                   {t(categoryLabels[item.category])}
                 </span>
               </button>

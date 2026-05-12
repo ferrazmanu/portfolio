@@ -35,7 +35,7 @@ export type ImagesWindowItem = ImagesWindowImageItem | ImagesWindowFileItem;
 export const imagesWindowItems: ImagesWindowItem[] = [
   {
     id: "profile-photo",
-    title: "manuela-ferraz.jpg",
+    title: "?.jpg",
     src: ProfileImage,
     type: "image",
     category: "easter-eggs",

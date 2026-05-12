@@ -29,6 +29,7 @@
 *::-webkit-scrollbar-track,
 *::-webkit-scrollbar-corner {
   background: var(--retro-scrollbar-track);
+  border-radius: 0;
 }
 
 *::-webkit-scrollbar-thumb {
@@ -44,6 +45,7 @@
   box-shadow:
     inset -1px -1px 0 var(--retro-scrollbar-shadow),
     inset 1px 1px 0 #eeeeee;
+  border-radius: 0;
 }
 
 *::-webkit-scrollbar-button {
@@ -56,6 +58,7 @@
   border-left-color: var(--retro-border-light);
   border-right-color: var(--retro-scrollbar-dark);
   border-bottom-color: var(--retro-scrollbar-dark);
+  border-radius: 0;
 }
 
 *::-webkit-scrollbar-button:active {
@@ -182,9 +185,19 @@ li {
   background-image:
     linear-gradient(rgba(33, 255, 116, 0.08) 1px, transparent 1px),
     linear-gradient(90deg, rgba(33, 255, 116, 0.08) 1px, transparent 1px),
-    radial-gradient(circle at 18px 18px, rgba(33, 255, 116, 0.16) 1px, transparent 2px);
-  background-position: 0 0, 0 0, 0 0;
-  background-size: 36px 36px, 36px 36px, 36px 36px;
+    radial-gradient(
+      circle at 18px 18px,
+      rgba(33, 255, 116, 0.16) 1px,
+      transparent 2px
+    );
+  background-position:
+    0 0,
+    0 0,
+    0 0;
+  background-size:
+    36px 36px,
+    36px 36px,
+    36px 36px;
 }
 
 .desktop-texture::before {
@@ -221,35 +234,189 @@ li {
   will-change: transform;
 }
 
+.assistant-pixel-presence {
+  transform: translateZ(0);
+  will-change: mask-image, -webkit-mask-image, opacity, transform, filter;
+}
+
+.assistant-message-collapsed .retro-message-body {
+  display: none;
+}
+
+.assistant-pixel-presence[data-pixel-presence-state="dismissing"] {
+  animation: assistant-pixel-dismissing 1100ms steps(6, end) forwards;
+}
+
+.assistant-pixel-presence[data-pixel-presence-state="restoring"] {
+  animation: assistant-pixel-restoring 900ms steps(6, end) both;
+}
+
+@keyframes assistant-pixel-dismissing {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+    filter: none;
+  }
+
+  45% {
+    opacity: 0.9;
+    transform: translate(-1px, 1px) scale(1.01);
+    filter: contrast(1.15);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-2px, 2px) scale(0.98);
+    filter: contrast(1.25);
+  }
+}
+
+@keyframes assistant-pixel-restoring {
+  0% {
+    opacity: 0;
+    transform: translate(-2px, 2px) scale(0.98);
+    filter: contrast(1.25);
+  }
+
+  55% {
+    opacity: 1;
+    transform: translate(1px, -1px) scale(1.01);
+    filter: contrast(1.1);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+    filter: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .floating-assistant-sprite {
     animation: none;
+  }
+
+  .assistant-pixel-presence {
+    animation: none !important;
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
   }
 }
 
 .retro-scrollbar {
   scrollbar-color: #808080 #dfdfdf;
-  scrollbar-width: thin;
+  scrollbar-width: auto;
 }
 
 .retro-scrollbar::-webkit-scrollbar {
-  width: 14px;
+  width: 16px !important;
+  height: 16px !important;
+  -webkit-appearance: none;
 }
 
-.retro-scrollbar::-webkit-scrollbar-track {
-  background: #dfdfdf;
+.retro-scrollbar::-webkit-scrollbar-track,
+.retro-scrollbar::-webkit-scrollbar-corner {
+  background: #dfdfdf !important;
+  border-radius: 0 !important;
 }
 
 .retro-scrollbar::-webkit-scrollbar-thumb {
-  background: #9a9a9a;
-  border: 2px solid #dfdfdf;
+  min-width: 16px !important;
+  min-height: 16px !important;
+  background: #b8b8b8 !important;
+  border-width: 2px !important;
+  border-style: solid !important;
+  border-top-color: #ffffff !important;
+  border-left-color: #ffffff !important;
+  border-right-color: #404040 !important;
+  border-bottom-color: #404040 !important;
+  border-radius: 0 !important;
+  box-shadow:
+    inset -1px -1px 0 #808080,
+    inset 1px 1px 0 #eeeeee !important;
+  -webkit-appearance: none;
+  background-clip: border-box !important;
+}
+
+.retro-scrollbar::-webkit-scrollbar-thumb:hover,
+.retro-scrollbar::-webkit-scrollbar-thumb:active,
+.retro-scrollbar::-webkit-scrollbar-thumb:window-inactive {
+  background: #b8b8b8 !important;
+  border-radius: 0 !important;
+  -webkit-appearance: none;
+}
+
+.retro-scrollbar::-webkit-scrollbar-button {
+  width: 16px !important;
+  height: 16px !important;
+  background-color: #dfdfdf !important;
+  border-width: 2px !important;
+  border-style: solid !important;
+  border-top-color: #ffffff !important;
+  border-left-color: #ffffff !important;
+  border-right-color: #404040 !important;
+  border-bottom-color: #404040 !important;
+  border-radius: 0 !important;
+  -webkit-appearance: none;
+}
+
+::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+  -webkit-appearance: none;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: #dfdfdf;
+  border-radius: 0 !important;
+}
+
+::-webkit-scrollbar-thumb {
+  min-width: 16px;
+  min-height: 16px;
+  background: #b8b8b8;
+  border-width: 2px;
+  border-style: solid;
+  border-top-color: #ffffff;
+  border-left-color: #ffffff;
+  border-right-color: #404040;
+  border-bottom-color: #404040;
+  box-shadow:
+    inset -1px -1px 0 #808080,
+    inset 1px 1px 0 #eeeeee;
+  border-radius: 0 !important;
+  -webkit-appearance: none;
+  background-clip: border-box !important;
+}
+
+::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:active,
+::-webkit-scrollbar-thumb:window-inactive {
+  background: #b8b8b8 !important;
+  border-radius: 0 !important;
+  -webkit-appearance: none;
+}
+
+::-webkit-scrollbar-button {
+  width: 16px;
+  height: 16px;
+  background-color: #dfdfdf;
+  border-width: 2px;
+  border-style: solid;
+  border-top-color: #ffffff;
+  border-left-color: #ffffff;
+  border-right-color: #404040;
+  border-bottom-color: #404040;
+  border-radius: 0 !important;
+  -webkit-appearance: none;
 }
 
 @media (max-width: 768px) {
   .retro-window-shell {
-    inset: 12px 12px 52px 12px !important;
-    width: auto !important;
-    height: auto !important;
-    transform: none !important;
+    left: 50% !important;
+    top: calc((100dvh - 48px) / 2) !important;
+    width: calc(100vw - 24px) !important;
+    transform: translate(-50%, -50%) !important;
   }
 }

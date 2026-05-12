@@ -174,7 +174,7 @@ export function RetroWindow({
 }: RetroWindowProps) {
   const initialSize = defaultSize ?? RETRO_WINDOW_SIZE_PRESETS[sizePreset];
   const [position, setPosition] = useState(
-    defaultPosition ?? DEFAULT_CENTER_POSITION
+    defaultPosition ?? DEFAULT_CENTER_POSITION,
   );
   const [isPositionReady, setIsPositionReady] = useState(false);
   const [size, setSize] = useState(initialSize);
@@ -249,7 +249,14 @@ export function RetroWindow({
     });
 
     return () => cancelAnimationFrame(rafId);
-  }, [defaultPosition, initialSize, isMinimized, isOpen, size.height, size.width]);
+  }, [
+    defaultPosition,
+    initialSize,
+    isMinimized,
+    isOpen,
+    size.height,
+    size.width,
+  ]);
 
   if (!isOpen || isMinimized || !isPositionReady) return null;
 
@@ -403,7 +410,7 @@ export function RetroWindow({
         </div>
       </div>
 
-      <div className="retro-border-inset retro-scrollbar m-2 min-h-0 flex-1 overflow-auto bg-[#f1f1f1] p-3 text-sm leading-relaxed text-black">
+      <div className="retro-border-inset m-2 min-h-0 flex-1 overflow-auto bg-[#f1f1f1] p-3 text-sm leading-relaxed text-black">
         {children}
       </div>
 

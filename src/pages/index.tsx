@@ -1,4 +1,10 @@
-import { useEffect, useRef } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type MouseEvent,
+  type PointerEvent,
+} from "react";
 
 import {
   DESKTOP_ICON_HEIGHT,
@@ -11,9 +17,13 @@ import { DesktopWindowContent } from "@/components/desktop/desktop-window-conten
 import { desktopWindows, initialIconPositions } from "@/components/desktop/desktop-config";
 import type { LocalizedText, WindowId } from "@/components/desktop/types";
 import { ProjectPreviewWindow } from "@/components/desktop/windows/projects/project-preview-window";
-import { assistantCharactersById } from "@/components/floating-assistant/assistant-messages";
+import {
+  assistantCharactersById,
+  genericAssistantActivationMessage,
+} from "@/components/floating-assistant/assistant-messages";
 import { FloatingAssistant } from "@/components/floating-assistant/floating-assistant";
 import { ImagePreviewWindow } from "@/components/image-preview-window";
+import { RetroMenu } from "@/components/retro-menu";
 import { RetroWindow } from "@/components/retro-window";
 import { Taskbar } from "@/components/taskbar";
 import { useTranslation } from "@/hooks/use-translation";
@@ -23,6 +33,17 @@ import { retroTheme } from "@/theme/retro-theme";
 
 const ICON_DESIGN_WIDTH = 1200;
 const ICON_DESIGN_HEIGHT = 620;
+const DESKTOP_CONTEXT_MENU_WIDTH = 190;
+const DESKTOP_CONTEXT_MENU_MARGIN = 8;
+const DESKTOP_CONTEXT_MENU_HEIGHT = 80;
+const DESKTOP_LONG_PRESS_MENU_DELAY = 550;
+const DESKTOP_LONG_PRESS_MOVE_THRESHOLD = 8;
+
+interface DesktopLongPressState {
+  pointerId: number;
+  startX: number;
+  startY: number;
+}
 
 const genericAllMinimizedMessage: LocalizedText = {
   pt: "Tudo minimizado. Nova fase: contemplar o vazio organizado.",
@@ -91,6 +112,16 @@ export default function Home() {
   const selectedAssistantId = useAssistantStore(
     (state) => state.selectedAssistantId,
   );
+  const isAssistantHidden = useAssistantStore(
+    (state) => state.isAssistantHidden,
+  );
+  const setActiveAssistantMessage = useAssistantStore(
+    (state) => state.setActiveAssistantMessage,
+  );
+  const requestHideAssistant = useAssistantStore(
+    (state) => state.requestHideAssistant,
+  );
+  const showAssistant = useAssistantStore((state) => state.showAssistant);
   const openWindows = useDesktopStore((state) => state.openWindows);
   const minimizedWindows = useDesktopStore((state) => state.minimizedWindows);
   const activeWindowId = useDesktopStore((state) => state.activeWindowId);
@@ -119,7 +150,12 @@ export default function Home() {
   const updateIconPosition = useDesktopStore(
     (state) => state.updateIconPosition,
   );
+  const contextMenuRef = useRef<HTMLDivElement>(null);
   const hasDraggedIconRef = useRef(false);
+  const desktopLongPressRef = useRef<DesktopLongPressState | null>(null);
+  const desktopLongPressTimerRef = useRef<number | null>(null);
+  const [assistantContextMenuPosition, setAssistantContextMenuPosition] =
+    useState<{ left: number; top: number } | null>(null);
 
   const t = ({ pt, en }: LocalizedText) =>
     handleTranslation({ text: pt, translation: en });
@@ -212,9 +248,136 @@ export default function Home() {
     windowOrder,
   ]);
 
+  useEffect(() => {
+    if (!assistantContextMenuPosition) return;
+
+    const handleOutsideClick = (event: globalThis.MouseEvent) => {
+      if (contextMenuRef.current?.contains(event.target as Node)) return;
+
+      setAssistantContextMenuPosition(null);
+    };
+
+    const handleResize = () => setAssistantContextMenuPosition(null);
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [assistantContextMenuPosition]);
+
+  useEffect(() => {
+    return () => {
+      if (desktopLongPressTimerRef.current) {
+        window.clearTimeout(desktopLongPressTimerRef.current);
+      }
+    };
+  }, []);
+
+  const clearDesktopLongPressTimer = () => {
+    if (!desktopLongPressTimerRef.current) return;
+
+    window.clearTimeout(desktopLongPressTimerRef.current);
+    desktopLongPressTimerRef.current = null;
+  };
+
+  const isDesktopContextMenuTarget = (target: EventTarget | null) => {
+    if (!(target instanceof HTMLElement)) return false;
+
+    return !target.closest(
+      "button, a, footer, [role='dialog'], [data-floating-assistant='true']",
+    );
+  };
+
+  const openDesktopAssistantMenu = (clientX: number, clientY: number) => {
+    const maxLeft = Math.max(
+      DESKTOP_CONTEXT_MENU_MARGIN,
+      window.innerWidth - DESKTOP_CONTEXT_MENU_WIDTH - DESKTOP_CONTEXT_MENU_MARGIN,
+    );
+    const maxTop = Math.max(
+      DESKTOP_CONTEXT_MENU_MARGIN,
+      window.innerHeight - DESKTOP_CONTEXT_MENU_HEIGHT - DESKTOP_CONTEXT_MENU_MARGIN,
+    );
+
+    setAssistantContextMenuPosition({
+      left: Math.min(maxLeft, Math.max(DESKTOP_CONTEXT_MENU_MARGIN, clientX)),
+      top: Math.min(maxTop, Math.max(DESKTOP_CONTEXT_MENU_MARGIN, clientY)),
+    });
+  };
+
+  const handleDesktopContextMenu = (event: MouseEvent<HTMLElement>) => {
+    if (!isDesktopContextMenuTarget(event.target)) return;
+
+    event.preventDefault();
+    openDesktopAssistantMenu(event.clientX, event.clientY);
+  };
+
+  const handleDesktopPointerDown = (event: PointerEvent<HTMLElement>) => {
+    if (event.pointerType === "mouse") return;
+    if (!isDesktopContextMenuTarget(event.target)) return;
+
+    clearDesktopLongPressTimer();
+    desktopLongPressRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+    };
+    desktopLongPressTimerRef.current = window.setTimeout(() => {
+      openDesktopAssistantMenu(event.clientX, event.clientY);
+      desktopLongPressTimerRef.current = null;
+      desktopLongPressRef.current = null;
+    }, DESKTOP_LONG_PRESS_MENU_DELAY);
+  };
+
+  const handleDesktopPointerMove = (event: PointerEvent<HTMLElement>) => {
+    const longPress = desktopLongPressRef.current;
+
+    if (!longPress || longPress.pointerId !== event.pointerId) return;
+
+    const distanceX = Math.abs(event.clientX - longPress.startX);
+    const distanceY = Math.abs(event.clientY - longPress.startY);
+
+    if (
+      distanceX > DESKTOP_LONG_PRESS_MOVE_THRESHOLD ||
+      distanceY > DESKTOP_LONG_PRESS_MOVE_THRESHOLD
+    ) {
+      clearDesktopLongPressTimer();
+      desktopLongPressRef.current = null;
+    }
+  };
+
+  const handleDesktopPointerUp = (event: PointerEvent<HTMLElement>) => {
+    const longPress = desktopLongPressRef.current;
+
+    if (!longPress || longPress.pointerId !== event.pointerId) return;
+
+    clearDesktopLongPressTimer();
+    desktopLongPressRef.current = null;
+  };
+
+  const handleShowAssistant = () => {
+    setActiveAssistantMessage(
+      selectedAssistant.activationMessage ?? genericAssistantActivationMessage,
+    );
+    showAssistant();
+    setAssistantContextMenuPosition(null);
+  };
+
+  const handleHideAssistantFromDesktop = () => {
+    requestHideAssistant();
+    setAssistantContextMenuPosition(null);
+  };
+
   return (
     <main
       className="desktop-texture min-h-screen overflow-hidden p-4 pb-14 font-retro text-retro-text sm:p-6"
+      onContextMenu={handleDesktopContextMenu}
+      onPointerCancel={handleDesktopPointerUp}
+      onPointerDown={handleDesktopPointerDown}
+      onPointerMove={handleDesktopPointerMove}
+      onPointerUp={handleDesktopPointerUp}
       style={{
         ["--retro-desktop" as string]: retroTheme.desktopBackground,
         ["--retro-titlebar" as string]: retroTheme.titlebarBlue,
@@ -272,6 +435,43 @@ export default function Home() {
       <ProjectPreviewWindow />
 
       <ImagePreviewWindow />
+
+      {assistantContextMenuPosition ? (
+        <RetroMenu
+          ref={contextMenuRef}
+          arrowPlacement="left"
+          className="after:hidden"
+          style={{
+            ...assistantContextMenuPosition,
+            width: DESKTOP_CONTEXT_MENU_WIDTH,
+          }}
+          items={[
+            isAssistantHidden
+              ? {
+                  id: "show-assistant",
+                  icon: "!",
+                  label: t({
+                    pt: "Mostrar assistente",
+                    en: "Show assistant",
+                  }),
+                  onClick: handleShowAssistant,
+                }
+              : {
+                  id: "hide-assistant",
+                  icon: "_",
+                  label: t({
+                    pt: "Ocultar assistente",
+                    en: "Hide assistant",
+                  }),
+                  onClick: handleHideAssistantFromDesktop,
+                },
+          ]}
+          title={t({
+            pt: "Desktop",
+            en: "Desktop",
+          })}
+        />
+      ) : null}
 
       <Taskbar />
     </main>

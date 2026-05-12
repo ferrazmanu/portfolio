@@ -22,5 +22,6 @@ export interface AssistantCharacter {
   initialMessage: AssistantMessage;
   activationMessage?: AssistantMessage;
   allMinimizedMessage?: AssistantMessage;
+  farewellMessage?: AssistantMessage;
   messages: AssistantCharacterMessages;
 }
