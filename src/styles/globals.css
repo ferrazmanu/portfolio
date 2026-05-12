@@ -19,6 +19,7 @@
   box-sizing: border-box;
   scrollbar-color: var(--retro-scrollbar-shadow) var(--retro-scrollbar-track);
   scrollbar-width: auto;
+  -webkit-tap-highlight-color: transparent;
 }
 
 *::-webkit-scrollbar {
@@ -110,7 +111,12 @@ body {
   height: 100%;
   margin: 0;
   min-height: 100vh;
+  overflow: hidden;
+  overscroll-behavior: none;
   font-family: Tahoma, Verdana, Arial, sans-serif;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
   color: var(--retro-text);
 }
 
@@ -120,7 +126,10 @@ body {
 }
 
 #__next {
+  height: 100%;
   min-height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 a {
@@ -131,6 +140,11 @@ a {
 button,
 a {
   cursor: default;
+}
+
+img {
+  -webkit-user-drag: none;
+  user-select: none;
 }
 
 ul,
