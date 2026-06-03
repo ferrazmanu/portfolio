@@ -1,45 +1,34 @@
 import { create } from "zustand";
 
 import type { DesktopIconPosition } from "@/components/desktop-icon";
+import { initialIconPositions } from "@/components/desktop/desktop-icon-positions";
 import {
   desktopMenuEasterEggMessage,
   getImagePreviewAssistantMessage,
   getProjectPreviewAssistantMessage,
-  getWindowAssistantMessage,
 } from "@/components/desktop/desktop-assistant-messages";
-import {
-  desktopWindows,
-  initialIconPositions,
-  initialMinimizedWindowState,
-  initialWindowOrder,
-  initialWindowState,
-} from "@/components/desktop/desktop-config";
 import type { LocalizedText, WindowId } from "@/components/desktop/types";
 import { imagesWindowPreviewItems } from "@/components/desktop/windows/images/images-config";
 import { trashPreviewItems } from "@/components/desktop/windows/trash/trash-config";
+import {
+  getHighestWindowOrder,
+  useWindowStore,
+  WINDOW_Z_INDEX_BASE,
+} from "./window-store";
 
 type StateUpdater<T> = T | ((currentState: T) => T);
 
 interface DesktopState {
-  openWindows: Record<WindowId, boolean>;
-  minimizedWindows: Record<WindowId, boolean>;
-  activeWindowId: WindowId | null;
   iconPositions: Record<WindowId, DesktopIconPosition>;
-  windowOrder: Record<WindowId, number>;
   selectedProjectName: string | null;
   projectPreviewZIndex: number;
   selectedImageId: string | null;
   imagePreviewZIndex: number;
   assistantExternalMessage: LocalizedText | null;
-  setActiveWindowId: (windowId: WindowId | null) => void;
   setIconPositions: (
     positions: StateUpdater<Record<WindowId, DesktopIconPosition>>,
   ) => void;
   setAssistantExternalMessage: (message: LocalizedText | null) => void;
-  bringWindowToFront: (windowId: WindowId) => void;
-  openWindow: (windowId: WindowId) => void;
-  minimizeWindow: (windowId: WindowId) => void;
-  closeWindow: (windowId: WindowId) => void;
   updateIconPosition: (windowId: string, position: DesktopIconPosition) => void;
   openProjectPreview: (projectName: string) => void;
   closeProjectPreview: () => void;
@@ -56,68 +45,20 @@ const getNextState = <T>(updater: StateUpdater<T>, currentState: T): T =>
     : updater;
 
 export const useDesktopStore = create<DesktopState>((set) => ({
-  openWindows: initialWindowState,
-  minimizedWindows: initialMinimizedWindowState,
-  activeWindowId: "about",
   iconPositions: initialIconPositions,
-  windowOrder: initialWindowOrder,
   selectedProjectName: null,
-  projectPreviewZIndex: 90,
+  projectPreviewZIndex: WINDOW_Z_INDEX_BASE,
   selectedImageId: null,
-  imagePreviewZIndex: 95,
+  imagePreviewZIndex: WINDOW_Z_INDEX_BASE,
   assistantExternalMessage: null,
-  setActiveWindowId: (windowId) => set(() => ({ activeWindowId: windowId })),
   setIconPositions: (positions) =>
     set((state) => ({
       iconPositions: getNextState(positions, state.iconPositions),
     })),
   setAssistantExternalMessage: (message) =>
     set(() => ({ assistantExternalMessage: message })),
-  bringWindowToFront: (windowId) =>
-    set((state) => ({
-      activeWindowId: windowId,
-      windowOrder: {
-        ...state.windowOrder,
-        [windowId]: Math.max(...Object.values(state.windowOrder)) + 1,
-      },
-    })),
-  openWindow: (windowId) =>
-    set((state) => ({
-      openWindows: {
-        ...state.openWindows,
-        [windowId]: true,
-      },
-      minimizedWindows: {
-        ...state.minimizedWindows,
-        [windowId]: false,
-      },
-      activeWindowId: windowId,
-      windowOrder: {
-        ...state.windowOrder,
-        [windowId]: Math.max(...Object.values(state.windowOrder)) + 1,
-      },
-      assistantExternalMessage: getWindowAssistantMessage(windowId),
-    })),
-  minimizeWindow: (windowId) =>
-    set((state) => ({
-      minimizedWindows: {
-        ...state.minimizedWindows,
-        [windowId]: true,
-      },
-    })),
-  closeWindow: (windowId) =>
-    set((state) => ({
-      openWindows: {
-        ...state.openWindows,
-        [windowId]: false,
-      },
-      minimizedWindows: {
-        ...state.minimizedWindows,
-        [windowId]: false,
-      },
-    })),
   updateIconPosition: (windowId, position) => {
-    if (!desktopWindows.some((windowItem) => windowItem.id === windowId)) {
+    if (!(windowId in initialIconPositions)) {
       return;
     }
 
@@ -129,20 +70,32 @@ export const useDesktopStore = create<DesktopState>((set) => ({
     }));
   },
   openProjectPreview: (projectName) =>
-    set((state) => ({
-      selectedProjectName: projectName,
-      assistantExternalMessage: getProjectPreviewAssistantMessage(projectName),
-      projectPreviewZIndex:
-        Math.max(...Object.values(state.windowOrder), state.projectPreviewZIndex) +
-        1,
-    })),
+    set((state) => {
+      const windows = useWindowStore.getState().windows;
+
+      return {
+        selectedProjectName: projectName,
+        assistantExternalMessage: getProjectPreviewAssistantMessage(projectName),
+        projectPreviewZIndex:
+          Math.max(
+            getHighestWindowOrder(windows),
+            state.projectPreviewZIndex,
+          ) + 1,
+      };
+    }),
   closeProjectPreview: () => set(() => ({ selectedProjectName: null })),
   bringProjectPreviewToFront: () =>
-    set((state) => ({
-      projectPreviewZIndex:
-        Math.max(...Object.values(state.windowOrder), state.projectPreviewZIndex) +
-        1,
-    })),
+    set((state) => {
+      const windows = useWindowStore.getState().windows;
+
+      return {
+        projectPreviewZIndex:
+          Math.max(
+            getHighestWindowOrder(windows),
+            state.projectPreviewZIndex,
+          ) + 1,
+      };
+    }),
   openImagePreview: (imageId) =>
     set((state) => {
       const image = [...imagesWindowPreviewItems, ...trashPreviewItems].find(
@@ -154,7 +107,7 @@ export const useDesktopStore = create<DesktopState>((set) => ({
         assistantExternalMessage: getImagePreviewAssistantMessage(image?.title),
         imagePreviewZIndex:
           Math.max(
-            ...Object.values(state.windowOrder),
+            getHighestWindowOrder(useWindowStore.getState().windows),
             state.projectPreviewZIndex,
             state.imagePreviewZIndex,
           ) + 1,
@@ -165,7 +118,7 @@ export const useDesktopStore = create<DesktopState>((set) => ({
     set((state) => ({
       imagePreviewZIndex:
         Math.max(
-          ...Object.values(state.windowOrder),
+          getHighestWindowOrder(useWindowStore.getState().windows),
           state.projectPreviewZIndex,
           state.imagePreviewZIndex,
         ) + 1,

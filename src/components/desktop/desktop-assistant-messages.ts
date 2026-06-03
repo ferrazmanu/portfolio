@@ -30,6 +30,14 @@ export const getWindowAssistantMessage = (id: WindowId): LocalizedText => {
       pt: "Skills carregadas. Eu teria adicionado 'convencer gatos a cooperar', mas faltou validação técnica.",
       en: "Skills loaded. I would add 'convincing cats to cooperate', but it lacks technical validation.",
     },
+    games: {
+      pt: "Pasta de jogos aberta. Bug Hunter.exe está logo ali, pronto para culpar o sistema.",
+      en: "Games folder opened. Bug Hunter.exe is right there, ready to blame the system.",
+    },
+    bugHunter: {
+      pt: "Bug Hunter.exe abriu em janela separada. Agora sim, caça aos bugs sem bagunçar a pasta.",
+      en: "Bug Hunter.exe opened in a separate window. Now the bug hunt stays out of the folder.",
+    },
     contact: {
       pt: "Contato aberto. Uma boa janela para chamar a Manu antes que eu mude de ideia.",
       en: "Contact opened. A good window to reach Manu before I change my mind.",

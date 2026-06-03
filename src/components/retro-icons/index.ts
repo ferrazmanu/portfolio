@@ -3,6 +3,7 @@ export { AudioIcon } from "./audio-icon";
 export { ContactIcon } from "./contact-icon";
 export { ExperienceIcon } from "./experience-icon";
 export { FileIcon } from "./file-icon";
+export { FolderIcon } from "./folder-icon";
 export { ImagesIcon } from "./images-icon";
 export { ProjectsIcon } from "./projects-icon";
 export { ResumeIcon } from "./resume-icon";

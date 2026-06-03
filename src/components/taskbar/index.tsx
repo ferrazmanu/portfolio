@@ -1,15 +1,20 @@
 import { useEffect, useRef, useState } from "react";
-import { desktopWindows } from "@/components/desktop/desktop-config";
-import type { WindowId } from "@/components/desktop/types";
+import { getWindowAssistantMessage } from "@/components/desktop/desktop-assistant-messages";
+import { desktopApps } from "@/components/desktop/desktop-config";
+import type { DesktopAppConfig } from "@/components/desktop/types";
 import { TranslationButton } from "@/components/translation-button";
 import { useTranslation } from "@/hooks/use-translation";
 import { useDesktopStore } from "@/store/desktop-store";
+import { useWindowStore, type WindowInstance } from "@/store/window-store";
 
 export function Taskbar() {
   const { handleTranslation } = useTranslation();
-  const openWindows = useDesktopStore((state) => state.openWindows);
-  const activeWindowId = useDesktopStore((state) => state.activeWindowId);
-  const openWindow = useDesktopStore((state) => state.openWindow);
+  const windows = useWindowStore((state) => state.windows);
+  const activeWindowId = useWindowStore((state) => state.activeWindowId);
+  const openWindow = useWindowStore((state) => state.openWindow);
+  const setAssistantExternalMessage = useDesktopStore(
+    (state) => state.setAssistantExternalMessage,
+  );
   const showDesktopMenuEasterEggMessage = useDesktopStore(
     (state) => state.showDesktopMenuEasterEggMessage,
   );
@@ -19,13 +24,6 @@ export function Taskbar() {
 
   const t = ({ pt, en }: { pt: string; en: string }) =>
     handleTranslation({ text: pt, translation: en });
-
-  const windows = desktopWindows.map((windowItem) => ({
-    id: windowItem.id,
-    title: t(windowItem.title),
-    isOpen: openWindows[windowItem.id],
-    icon: windowItem.icon,
-  }));
 
   useEffect(() => {
     if (!isMenuOpen) return;
@@ -67,9 +65,22 @@ export function Taskbar() {
   const displayTime = currentDate ? time : "--:--:--";
   const displayDate = currentDate ? date : "--/--/----";
 
-  const handleMenuWindowSelect = (id: WindowId) => {
-    openWindow(id);
+  const handleMenuWindowSelect = (desktopApp: DesktopAppConfig) => {
+    openWindow({
+      id: desktopApp.id,
+      title: desktopApp.title,
+      icon: desktopApp.icon,
+      content: desktopApp.content,
+      defaultPosition: desktopApp.centerOnOpen ? undefined : desktopApp.position,
+      sizePreset: desktopApp.sizePreset,
+    });
+    setAssistantExternalMessage(getWindowAssistantMessage(desktopApp.id));
     setIsMenuOpen(false);
+  };
+
+  const handleTaskbarWindowSelect = (windowItem: WindowInstance) => {
+    openWindow(windowItem);
+    setAssistantExternalMessage(getWindowAssistantMessage(windowItem.id));
   };
 
   return (
@@ -82,19 +93,21 @@ export function Taskbar() {
             </div>
 
             <div className="min-w-0 flex-1 py-1">
-              {windows.map((windowItem) => (
+              {desktopApps.map((desktopApp) => (
                 <button
-                  key={windowItem.id}
+                  key={desktopApp.id}
                   type="button"
                   className="flex h-8 w-full items-center gap-2 px-2 text-left hover:bg-[#0b6f35] hover:text-white focus:bg-[#0b6f35] focus:text-white focus:outline-none"
-                  onClick={() => handleMenuWindowSelect(windowItem.id)}
+                  onClick={() => handleMenuWindowSelect(desktopApp)}
                 >
-                  {windowItem.icon && (
+                  {desktopApp.icon && (
                     <span className="retro-border-inset flex h-5 w-5 items-center justify-center overflow-hidden bg-white text-black [&>*]:scale-[0.42]">
-                      {windowItem.icon}
+                      {desktopApp.icon}
                     </span>
                   )}
-                  <span className="truncate font-bold">{windowItem.title}</span>
+                  <span className="truncate font-bold">
+                    {t(desktopApp.title)}
+                  </span>
                 </button>
               ))}
 
@@ -136,23 +149,21 @@ export function Taskbar() {
       <div className="retro-border-inset h-7 w-[3px] bg-[#d8d8d8]" />
 
       <div className="flex min-w-0 flex-1 gap-1 overflow-x-auto">
-        {windows
-          .filter((windowItem) => windowItem.isOpen)
-          .map((windowItem) => (
-            <button
-              key={windowItem.id}
-              type="button"
-              className={`h-7 min-w-28 truncate px-2 text-left ${
-                activeWindowId === windowItem.id
-                  ? "retro-border-inset bg-[#0b6f35] text-white"
-                  : "retro-button"
-              }`}
-              aria-label={`Trazer ${windowItem.title} para frente`}
-              onClick={() => openWindow(windowItem.id)}
-            >
-              {windowItem.title}
-            </button>
-          ))}
+        {windows.map((windowItem) => (
+          <button
+            key={windowItem.id}
+            type="button"
+            className={`h-7 min-w-28 truncate px-2 text-left ${
+              activeWindowId === windowItem.id
+                ? "retro-border-inset bg-[#0b6f35] text-white"
+                : "retro-button"
+            }`}
+            aria-label={`Trazer ${t(windowItem.title)} para frente`}
+            onClick={() => handleTaskbarWindowSelect(windowItem)}
+          >
+            {t(windowItem.title)}
+          </button>
+        ))}
       </div>
 
       <div className="retro-border-inset h-7 w-[3px] bg-[#d8d8d8]" />

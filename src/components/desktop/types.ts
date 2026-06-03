@@ -1,6 +1,9 @@
 import type { ReactNode } from "react";
 
-import type { RetroWindowSizePreset } from "@/components/retro-window";
+import type {
+  RetroWindowPosition,
+  RetroWindowSizePreset,
+} from "@/components/retro-window";
 
 export type WindowId =
   | "about"
@@ -8,6 +11,8 @@ export type WindowId =
   | "projects"
   | "experience"
   | "skills"
+  | "games"
+  | "bugHunter"
   | "contact"
   | "resume"
   | "trash";
@@ -19,18 +24,17 @@ export interface LocalizedText {
 
 export type TranslateFn = (text: LocalizedText) => string;
 
-export interface DesktopWindowConfig {
+export interface DesktopAppConfig {
   id: WindowId;
   title: LocalizedText;
   label: LocalizedText;
   icon: ReactNode;
+  content: (t: TranslateFn) => ReactNode;
   iconPosition: {
     x: number;
     y: number;
   };
-  position: {
-    x: number;
-    y: number;
-  };
+  position?: RetroWindowPosition;
   sizePreset: RetroWindowSizePreset;
+  centerOnOpen?: boolean;
 }

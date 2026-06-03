@@ -1,4 +1,5 @@
 import {
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -13,14 +14,21 @@ import {
   DesktopIcon,
   type DesktopIconPosition,
 } from "@/components/desktop-icon";
-import { DesktopWindowContent } from "@/components/desktop/desktop-window-content";
-import { desktopWindows, initialIconPositions } from "@/components/desktop/desktop-config";
-import type { LocalizedText, WindowId } from "@/components/desktop/types";
+import {
+  desktopApps,
+} from "@/components/desktop/desktop-config";
+import { initialIconPositions } from "@/components/desktop/desktop-icon-positions";
+import type {
+  DesktopAppConfig,
+  LocalizedText,
+  WindowId,
+} from "@/components/desktop/types";
 import { ProjectPreviewWindow } from "@/components/desktop/windows/projects/project-preview-window";
 import {
   assistantCharactersById,
   genericAssistantActivationMessage,
 } from "@/components/floating-assistant/assistant-messages";
+import { getWindowAssistantMessage } from "@/components/desktop/desktop-assistant-messages";
 import { FloatingAssistant } from "@/components/floating-assistant/floating-assistant";
 import { ImagePreviewWindow } from "@/components/image-preview-window";
 import { RetroMenu } from "@/components/retro-menu";
@@ -29,6 +37,7 @@ import { Taskbar } from "@/components/taskbar";
 import { useTranslation } from "@/hooks/use-translation";
 import { useAssistantStore } from "@/store/assistant-store";
 import { useDesktopStore } from "@/store/desktop-store";
+import { useWindowStore, type WindowInstance } from "@/store/window-store";
 import { retroTheme } from "@/theme/retro-theme";
 
 const ICON_DESIGN_WIDTH = 1200;
@@ -66,42 +75,41 @@ const clampIconPosition = (
 };
 
 const getResponsiveIconPositions = (): Record<WindowId, DesktopIconPosition> =>
-  desktopWindows.reduce<Record<WindowId, DesktopIconPosition>>(
-    (positions, windowItem) => {
-      const maxDesignX = ICON_DESIGN_WIDTH - DESKTOP_ICON_WIDTH;
-      const maxDesignY =
-        ICON_DESIGN_HEIGHT - DESKTOP_ICON_HEIGHT - DESKTOP_TASKBAR_HEIGHT;
-      const maxViewportX = Math.max(0, window.innerWidth - DESKTOP_ICON_WIDTH);
-      const maxViewportY = Math.max(
-        0,
-        window.innerHeight - DESKTOP_ICON_HEIGHT - DESKTOP_TASKBAR_HEIGHT,
-      );
+  desktopApps
+    .reduce<Record<WindowId, DesktopIconPosition>>(
+      (positions, desktopApp) => {
+        const maxDesignX = ICON_DESIGN_WIDTH - DESKTOP_ICON_WIDTH;
+        const maxDesignY =
+          ICON_DESIGN_HEIGHT - DESKTOP_ICON_HEIGHT - DESKTOP_TASKBAR_HEIGHT;
+        const maxViewportX = Math.max(
+          0,
+          window.innerWidth - DESKTOP_ICON_WIDTH,
+        );
+        const maxViewportY = Math.max(
+          0,
+          window.innerHeight - DESKTOP_ICON_HEIGHT - DESKTOP_TASKBAR_HEIGHT,
+        );
 
-      return {
-        ...positions,
-        [windowItem.id]: clampIconPosition({
-          x: (windowItem.iconPosition.x / maxDesignX) * maxViewportX,
-          y: (windowItem.iconPosition.y / maxDesignY) * maxViewportY,
-        }),
-      };
-    },
-    initialIconPositions,
-  );
+        return {
+          ...positions,
+          [desktopApp.id]: clampIconPosition({
+            x: (desktopApp.iconPosition.x / maxDesignX) * maxViewportX,
+            y: (desktopApp.iconPosition.y / maxDesignY) * maxViewportY,
+          }),
+        };
+      },
+      initialIconPositions,
+    );
 
 const getTopVisibleWindowId = (
-  openWindows: Record<WindowId, boolean>,
-  minimizedWindows: Record<WindowId, boolean>,
-  windowOrder: Record<WindowId, number>,
+  windows: WindowInstance[],
 ): WindowId | null => {
-  const visibleWindows = desktopWindows.filter(
-    (windowItem) =>
-      openWindows[windowItem.id] && !minimizedWindows[windowItem.id],
-  );
+  const visibleWindows = windows.filter((windowItem) => !windowItem.isMinimized);
 
   if (visibleWindows.length === 0) return null;
 
   return visibleWindows.reduce((topWindow, windowItem) =>
-    windowOrder[windowItem.id] > windowOrder[topWindow.id]
+    windowItem.zIndex > topWindow.zIndex
       ? windowItem
       : topWindow,
   ).id;
@@ -122,11 +130,9 @@ export default function Home() {
     (state) => state.requestHideAssistant,
   );
   const showAssistant = useAssistantStore((state) => state.showAssistant);
-  const openWindows = useDesktopStore((state) => state.openWindows);
-  const minimizedWindows = useDesktopStore((state) => state.minimizedWindows);
-  const activeWindowId = useDesktopStore((state) => state.activeWindowId);
+  const windows = useWindowStore((state) => state.windows);
+  const activeWindowId = useWindowStore((state) => state.activeWindowId);
   const iconPositions = useDesktopStore((state) => state.iconPositions);
-  const windowOrder = useDesktopStore((state) => state.windowOrder);
   const selectedProjectName = useDesktopStore(
     (state) => state.selectedProjectName,
   );
@@ -134,19 +140,19 @@ export default function Home() {
   const assistantExternalMessage = useDesktopStore(
     (state) => state.assistantExternalMessage,
   );
-  const setActiveWindowId = useDesktopStore(
+  const setActiveWindowId = useWindowStore(
     (state) => state.setActiveWindowId,
   );
   const setIconPositions = useDesktopStore((state) => state.setIconPositions);
   const setAssistantExternalMessage = useDesktopStore(
     (state) => state.setAssistantExternalMessage,
   );
-  const bringWindowToFront = useDesktopStore(
+  const bringWindowToFront = useWindowStore(
     (state) => state.bringWindowToFront,
   );
-  const openWindow = useDesktopStore((state) => state.openWindow);
-  const minimizeWindow = useDesktopStore((state) => state.minimizeWindow);
-  const closeWindow = useDesktopStore((state) => state.closeWindow);
+  const openWindow = useWindowStore((state) => state.openWindow);
+  const minimizeWindow = useWindowStore((state) => state.minimizeWindow);
+  const closeWindow = useWindowStore((state) => state.closeWindow);
   const updateIconPosition = useDesktopStore(
     (state) => state.updateIconPosition,
   );
@@ -154,22 +160,41 @@ export default function Home() {
   const hasDraggedIconRef = useRef(false);
   const desktopLongPressRef = useRef<DesktopLongPressState | null>(null);
   const desktopLongPressTimerRef = useRef<number | null>(null);
+  const hasOpenedInitialWindowRef = useRef(false);
   const [assistantContextMenuPosition, setAssistantContextMenuPosition] =
     useState<{ left: number; top: number } | null>(null);
 
-  const t = ({ pt, en }: LocalizedText) =>
-    handleTranslation({ text: pt, translation: en });
+  const t = useCallback(
+    ({ pt, en }: LocalizedText) =>
+      handleTranslation({ text: pt, translation: en }),
+    [handleTranslation],
+  );
+
+  const handleOpenDesktopApp = useCallback(
+    (desktopApp: DesktopAppConfig) => {
+      openWindow({
+        id: desktopApp.id,
+        title: desktopApp.title,
+        icon: desktopApp.icon,
+        content: desktopApp.content,
+        defaultPosition: desktopApp.centerOnOpen
+          ? undefined
+          : desktopApp.position,
+        sizePreset: desktopApp.sizePreset,
+      });
+      setAssistantExternalMessage(getWindowAssistantMessage(desktopApp.id));
+    },
+    [openWindow, setAssistantExternalMessage],
+  );
 
   const selectedAssistant = assistantCharactersById[selectedAssistantId];
   const allMinimizedAssistantMessage =
     selectedAssistant.allMinimizedMessage ?? genericAllMinimizedMessage;
-  const hasVisibleDesktopWindow = desktopWindows.some(
-    (windowItem) =>
-      openWindows[windowItem.id] && !minimizedWindows[windowItem.id],
+  const hasVisibleDesktopWindow = windows.some(
+    (windowItem) => !windowItem.isMinimized,
   );
-  const hasMinimizedDesktopWindow = desktopWindows.some(
-    (windowItem) =>
-      openWindows[windowItem.id] && minimizedWindows[windowItem.id],
+  const hasMinimizedDesktopWindow = windows.some(
+    (windowItem) => windowItem.isMinimized,
   );
   const areAllDesktopWindowsMinimized =
     hasMinimizedDesktopWindow &&
@@ -178,7 +203,7 @@ export default function Home() {
     !selectedImageId;
 
   const hasOpenWindow =
-    Object.values(openWindows).some(Boolean) ||
+    windows.length > 0 ||
     Boolean(selectedProjectName) ||
     Boolean(selectedImageId);
 
@@ -190,6 +215,17 @@ export default function Home() {
       en: "All windows are closed. Radical minimalism, or are you just leaving me alone?",
     });
   }, [hasOpenWindow, setAssistantExternalMessage]);
+
+  useEffect(() => {
+    if (hasOpenedInitialWindowRef.current) return;
+
+    const aboutApp = desktopApps.find((desktopApp) => desktopApp.id === "about");
+
+    if (!aboutApp) return;
+
+    hasOpenedInitialWindowRef.current = true;
+    handleOpenDesktopApp(aboutApp);
+  }, [handleOpenDesktopApp]);
 
   useEffect(() => {
     if (!areAllDesktopWindowsMinimized) return;
@@ -205,15 +241,16 @@ export default function Home() {
     const updateResponsiveIconPositions = () => {
       if (hasDraggedIconRef.current) {
         setIconPositions((currentPositions) =>
-          desktopWindows.reduce<Record<WindowId, DesktopIconPosition>>(
-            (positions, windowItem) => ({
-              ...positions,
-              [windowItem.id]: clampIconPosition(
-                currentPositions[windowItem.id],
-              ),
-            }),
-            currentPositions,
-          ),
+          desktopApps
+            .reduce<Record<WindowId, DesktopIconPosition>>(
+              (positions, desktopApp) => ({
+                ...positions,
+                [desktopApp.id]: clampIconPosition(
+                  currentPositions[desktopApp.id],
+                ),
+              }),
+              currentPositions,
+            ),
         );
         return;
       }
@@ -231,21 +268,21 @@ export default function Home() {
   useEffect(() => {
     if (
       activeWindowId &&
-      openWindows[activeWindowId] &&
-      !minimizedWindows[activeWindowId]
+      windows.some(
+        (windowItem) =>
+          windowItem.id === activeWindowId && !windowItem.isMinimized,
+      )
     ) {
       return;
     }
 
     setActiveWindowId(
-      getTopVisibleWindowId(openWindows, minimizedWindows, windowOrder),
+      getTopVisibleWindowId(windows),
     );
   }, [
     activeWindowId,
-    minimizedWindows,
-    openWindows,
     setActiveWindowId,
-    windowOrder,
+    windows,
   ]);
 
   useEffect(() => {
@@ -390,20 +427,21 @@ export default function Home() {
       <h1 className="sr-only">Portfólio de Manuela Ferraz</h1>
 
       <div className="absolute inset-x-0 bottom-12 top-0 z-10">
-        {desktopWindows.map((windowItem) => (
-          <DesktopIcon
-            key={windowItem.id}
-            id={windowItem.id}
-            label={t(windowItem.label)}
-            icon={windowItem.icon}
-            position={iconPositions[windowItem.id]}
-            onPositionChange={(id, position) => {
-              hasDraggedIconRef.current = true;
-              updateIconPosition(id, position);
-            }}
-            onOpen={() => openWindow(windowItem.id)}
-          />
-        ))}
+        {desktopApps
+          .map((desktopApp) => (
+            <DesktopIcon
+              key={desktopApp.id}
+              id={desktopApp.id}
+              label={t(desktopApp.label)}
+              icon={desktopApp.icon}
+              position={iconPositions[desktopApp.id]}
+              onPositionChange={(id, position) => {
+                hasDraggedIconRef.current = true;
+                updateIconPosition(id, position);
+              }}
+              onOpen={() => handleOpenDesktopApp(desktopApp)}
+            />
+          ))}
       </div>
 
       <FloatingAssistant
@@ -411,24 +449,22 @@ export default function Home() {
         translateMessage={t}
       />
 
-      {desktopWindows.map((windowItem) => (
+      {windows.map((windowItem) => (
         <RetroWindow
           key={windowItem.id}
           id={windowItem.id}
           title={t(windowItem.title)}
           icon={windowItem.icon}
-          isOpen={openWindows[windowItem.id]}
-          isMinimized={minimizedWindows[windowItem.id]}
+          isOpen
+          isMinimized={windowItem.isMinimized}
           onMinimize={() => minimizeWindow(windowItem.id)}
           onClose={() => closeWindow(windowItem.id)}
           onFocus={() => bringWindowToFront(windowItem.id)}
-          defaultPosition={
-            windowItem.id === "about" ? undefined : windowItem.position
-          }
+          defaultPosition={windowItem.defaultPosition}
           sizePreset={windowItem.sizePreset}
-          zIndex={windowOrder[windowItem.id]}
+          zIndex={windowItem.zIndex}
         >
-          <DesktopWindowContent windowId={windowItem.id} t={t} />
+          {windowItem.content(t)}
         </RetroWindow>
       ))}
 
