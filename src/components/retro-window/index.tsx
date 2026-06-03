@@ -362,14 +362,14 @@ export function RetroWindow({
       role="dialog"
       onMouseDown={onFocus}
     >
-      <div
-        className="retro-titlebar touch-none select-none"
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-      >
-        <div className="flex min-w-0 items-center gap-1">
+      <div className="retro-titlebar select-none">
+        <div
+          className="flex min-w-0 flex-1 touch-none items-center gap-1 self-stretch"
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+        >
           {icon && (
             <span className="retro-border-inset flex h-4 w-4 items-center justify-center overflow-hidden bg-white text-[10px] text-black [&>*]:scale-[0.35]">
               {icon}
@@ -392,7 +392,10 @@ export function RetroWindow({
               onMinimize();
             }}
           >
-            _
+            <span
+              aria-hidden="true"
+              className="mt-2 h-[2px] w-2.5 bg-black"
+            />
           </button>
           <button
             type="button"
@@ -405,7 +408,10 @@ export function RetroWindow({
               onClose();
             }}
           >
-            x
+            <span aria-hidden="true" className="relative h-3 w-3">
+              <span className="absolute left-1/2 top-0 h-3 w-[2px] -translate-x-1/2 rotate-45 bg-black" />
+              <span className="absolute left-1/2 top-0 h-3 w-[2px] -translate-x-1/2 -rotate-45 bg-black" />
+            </span>
           </button>
         </div>
       </div>
