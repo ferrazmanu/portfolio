@@ -231,6 +231,67 @@ li {
   mix-blend-mode: screen;
 }
 
+.bug-hunter-grid {
+  background-image:
+    linear-gradient(rgba(69, 255, 109, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(69, 255, 109, 0.12) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.bug-hunter-cursor,
+.bug-hunter-cursor button {
+  cursor: crosshair;
+}
+
+.bug-hunter-bug {
+  animation: bug-hunter-spawn 160ms steps(3, end) both;
+  image-rendering: pixelated;
+}
+
+.bug-hunter-bug:active {
+  animation: bug-hunter-pop 130ms steps(2, end) both;
+}
+
+.bug-hunter-hit {
+  animation: bug-hunter-hit 850ms steps(5, end) forwards;
+  text-shadow: 1px 1px 0 #001b0f;
+  white-space: nowrap;
+}
+
+@keyframes bug-hunter-spawn {
+  0% {
+    opacity: 0;
+    transform: scale(0.35) translateY(4px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes bug-hunter-pop {
+  0% {
+    transform: scale(1);
+  }
+
+  100% {
+    transform: scale(1.25);
+  }
+}
+
+@keyframes bug-hunter-hit {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+}
+
 @keyframes assistant-float {
   0%,
   100% {
