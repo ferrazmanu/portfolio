@@ -10,6 +10,7 @@ export const initialIconPositions: Record<WindowId, DesktopIconPosition> = {
   skills: { x: 536, y: 82 },
   games: { x: 668, y: 292 },
   bugHunter: { x: 0, y: 0 },
+  stackSnake: { x: 0, y: 0 },
   projectPreview: { x: 0, y: 0 },
   imagePreview: { x: 0, y: 0 },
   contact: { x: 940, y: 238 },

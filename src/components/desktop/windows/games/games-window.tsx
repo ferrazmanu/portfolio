@@ -1,5 +1,6 @@
 import { getWindowAssistantMessage } from "@/components/desktop/desktop-assistant-messages";
 import { BugHunter } from "@/components/games/bug-hunter/bug-hunter";
+import { StackSnake } from "@/components/games/stack-snake/stack-snake";
 import { FileIcon } from "@/components/retro-icons";
 import { useAssistantStore } from "@/store/assistant-store";
 import { useWindowStore } from "@/store/window-store";
@@ -10,11 +11,12 @@ interface GamesWindowProps {
   t: TranslateFn;
 }
 
-type GameId = "bugHunter";
+type GameId = "bugHunter" | "stackSnake";
 
 const games: Array<{
   id: GameId;
   title: string;
+  iconLabel: string;
   description: {
     pt: string;
     en: string;
@@ -23,12 +25,27 @@ const games: Array<{
   {
     id: "bugHunter",
     title: "Bug Hunter.exe",
+    iconLabel: "BUG",
     description: {
       pt: "Capture bugs do sistema antes que eles desapareçam.",
       en: "Capture system bugs before they disappear.",
     },
   },
+  {
+    id: "stackSnake",
+    title: "Stack Snake.exe",
+    iconLabel: "SNK",
+    description: {
+      pt: "Colete tecnologias e evolua sua stack.",
+      en: "Collect technologies and evolve your stack.",
+    },
+  },
 ];
+
+const gameContentById: Record<GameId, () => JSX.Element> = {
+  bugHunter: BugHunter,
+  stackSnake: StackSnake,
+};
 
 export function GamesWindow({ t }: GamesWindowProps) {
   const openWindow = useWindowStore((state) => state.openWindow);
@@ -37,11 +54,14 @@ export function GamesWindow({ t }: GamesWindowProps) {
   );
 
   const handleOpenGame = (gameId: GameId) => {
+    const selectedGame = games.find((game) => game.id === gameId) ?? games[0];
+    const GameContent = gameContentById[gameId];
+
     openWindow({
       id: gameId,
-      title: { pt: "Bug Hunter.exe", en: "Bug Hunter.exe" },
-      icon: <FileIcon label="BUG" />,
-      content: () => <BugHunter />,
+      title: { pt: selectedGame.title, en: selectedGame.title },
+      icon: <FileIcon label={selectedGame.iconLabel} />,
+      content: () => <GameContent />,
       sizePreset: "xl",
     });
     setAssistantMessage(getWindowAssistantMessage(gameId));
@@ -58,7 +78,7 @@ export function GamesWindow({ t }: GamesWindowProps) {
         >
           <span className="retro-border-inset mb-1 flex min-h-0 items-center justify-center bg-[#dcdcdc] sm:mb-2">
             <span className="[&>*]:scale-75">
-              <FileIcon label="BUG" />
+              <FileIcon label={game.iconLabel} />
             </span>
           </span>
           <span className="block truncate text-[10px] font-bold sm:text-xs">

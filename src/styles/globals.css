@@ -258,6 +258,40 @@ li {
   white-space: nowrap;
 }
 
+.stack-snake-grid {
+  background-image:
+    linear-gradient(rgba(69, 255, 109, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(69, 255, 109, 0.08) 1px, transparent 1px);
+  background-size: 5% 5%;
+}
+
+.stack-snake-crt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(214, 255, 216, 0.05) 0,
+      rgba(214, 255, 216, 0.05) 1px,
+      transparent 1px,
+      transparent 4px
+    ),
+    radial-gradient(circle at 50% 50%, transparent 0, rgba(0, 0, 0, 0.35) 84%);
+  mix-blend-mode: screen;
+}
+
+.stack-snake-food {
+  animation: stack-snake-food-pulse 700ms steps(4, end) infinite alternate;
+}
+
+.stack-snake-score-pop {
+  animation: stack-snake-score-pop 900ms steps(5, end) forwards;
+  text-shadow: 1px 1px 0 #001b0f;
+  white-space: nowrap;
+}
+
 @keyframes bug-hunter-spawn {
   0% {
     opacity: 0;
@@ -281,6 +315,30 @@ li {
 }
 
 @keyframes bug-hunter-hit {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+}
+
+@keyframes stack-snake-food-pulse {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.92);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes stack-snake-score-pop {
   0% {
     opacity: 1;
     transform: translateY(0);

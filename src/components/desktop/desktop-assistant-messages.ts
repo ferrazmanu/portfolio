@@ -38,6 +38,10 @@ export const getWindowAssistantMessage = (id: WindowId): LocalizedText => {
       pt: "Bug Hunter.exe abriu em janela separada. Agora sim, caça aos bugs sem bagunçar a pasta.",
       en: "Bug Hunter.exe opened in a separate window. Now the bug hunt stays out of the folder.",
     },
+    stackSnake: {
+      pt: "Stack Snake.exe carregado. Colete tecnologias, evite o legado e finja que tudo estava planejado.",
+      en: "Stack Snake.exe loaded. Collect technologies, dodge legacy code, and pretend it was all planned.",
+    },
     projectPreview: {
       pt: "Prévia de projeto em foco. Os pixels estão se comportando por enquanto.",
       en: "Project preview focused. The pixels are behaving for now.",
