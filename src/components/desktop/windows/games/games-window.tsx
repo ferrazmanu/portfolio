@@ -1,7 +1,7 @@
 import { getWindowAssistantMessage } from "@/components/desktop/desktop-assistant-messages";
 import { BugHunter } from "@/components/games/bug-hunter/bug-hunter";
 import { FileIcon } from "@/components/retro-icons";
-import { useDesktopStore } from "@/store/desktop-store";
+import { useAssistantStore } from "@/store/assistant-store";
 import { useWindowStore } from "@/store/window-store";
 
 import type { TranslateFn } from "../../types";
@@ -32,8 +32,8 @@ const games: Array<{
 
 export function GamesWindow({ t }: GamesWindowProps) {
   const openWindow = useWindowStore((state) => state.openWindow);
-  const setAssistantExternalMessage = useDesktopStore(
-    (state) => state.setAssistantExternalMessage,
+  const setAssistantMessage = useAssistantStore(
+    (state) => state.setAssistantMessage,
   );
 
   const handleOpenGame = (gameId: GameId) => {
@@ -44,7 +44,7 @@ export function GamesWindow({ t }: GamesWindowProps) {
       content: () => <BugHunter />,
       sizePreset: "xl",
     });
-    setAssistantExternalMessage(getWindowAssistantMessage(gameId));
+    setAssistantMessage(getWindowAssistantMessage(gameId));
   };
 
   return (

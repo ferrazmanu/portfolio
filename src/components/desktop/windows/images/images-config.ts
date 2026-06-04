@@ -10,7 +10,7 @@ import OliverImage from "assets/images/oliver.jpeg";
 import ProfileImage from "assets/images/eu.jpg";
 import UrsulaImage from "assets/images/ursula.jpeg";
 
-import type { PreviewImageItem } from "@/components/image-preview-window";
+import type { PreviewImageItem } from "@/components/image-preview-content/image-preview-content";
 
 type ImagesWindowItemCategory = "projects" | "wallpapers" | "easter-eggs";
 

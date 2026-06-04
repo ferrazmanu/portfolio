@@ -1,7 +1,7 @@
 import LogoPortfolioImage from "assets/images/logo-portfolio.png";
 import E from "assets/images/e.jpeg";
 
-import type { PreviewImageItem } from "@/components/image-preview-window";
+import type { PreviewImageItem } from "@/components/image-preview-content/image-preview-content";
 import type { LocalizedText } from "../../types";
 
 interface BaseTrashItem {

@@ -23,14 +23,12 @@ import type {
   LocalizedText,
   WindowId,
 } from "@/components/desktop/types";
-import { ProjectPreviewWindow } from "@/components/desktop/windows/projects/project-preview-window";
 import {
   assistantCharactersById,
   genericAssistantActivationMessage,
 } from "@/components/floating-assistant/assistant-messages";
 import { getWindowAssistantMessage } from "@/components/desktop/desktop-assistant-messages";
 import { FloatingAssistant } from "@/components/floating-assistant/floating-assistant";
-import { ImagePreviewWindow } from "@/components/image-preview-window";
 import { RetroMenu } from "@/components/retro-menu";
 import { RetroWindow } from "@/components/retro-window";
 import { Taskbar } from "@/components/taskbar";
@@ -123,30 +121,17 @@ export default function Home() {
   const isAssistantHidden = useAssistantStore(
     (state) => state.isAssistantHidden,
   );
-  const setActiveAssistantMessage = useAssistantStore(
-    (state) => state.setActiveAssistantMessage,
+  const setAssistantMessage = useAssistantStore(
+    (state) => state.setAssistantMessage,
   );
-  const requestHideAssistant = useAssistantStore(
-    (state) => state.requestHideAssistant,
-  );
-  const showAssistant = useAssistantStore((state) => state.showAssistant);
+  const toggleAssistant = useAssistantStore((state) => state.toggleAssistant);
   const windows = useWindowStore((state) => state.windows);
   const activeWindowId = useWindowStore((state) => state.activeWindowId);
   const iconPositions = useDesktopStore((state) => state.iconPositions);
-  const selectedProjectName = useDesktopStore(
-    (state) => state.selectedProjectName,
-  );
-  const selectedImageId = useDesktopStore((state) => state.selectedImageId);
-  const assistantExternalMessage = useDesktopStore(
-    (state) => state.assistantExternalMessage,
-  );
   const setActiveWindowId = useWindowStore(
     (state) => state.setActiveWindowId,
   );
   const setIconPositions = useDesktopStore((state) => state.setIconPositions);
-  const setAssistantExternalMessage = useDesktopStore(
-    (state) => state.setAssistantExternalMessage,
-  );
   const bringWindowToFront = useWindowStore(
     (state) => state.bringWindowToFront,
   );
@@ -182,9 +167,9 @@ export default function Home() {
           : desktopApp.position,
         sizePreset: desktopApp.sizePreset,
       });
-      setAssistantExternalMessage(getWindowAssistantMessage(desktopApp.id));
+      setAssistantMessage(getWindowAssistantMessage(desktopApp.id));
     },
-    [openWindow, setAssistantExternalMessage],
+    [openWindow, setAssistantMessage],
   );
 
   const selectedAssistant = assistantCharactersById[selectedAssistantId];
@@ -198,23 +183,18 @@ export default function Home() {
   );
   const areAllDesktopWindowsMinimized =
     hasMinimizedDesktopWindow &&
-    !hasVisibleDesktopWindow &&
-    !selectedProjectName &&
-    !selectedImageId;
+    !hasVisibleDesktopWindow;
 
-  const hasOpenWindow =
-    windows.length > 0 ||
-    Boolean(selectedProjectName) ||
-    Boolean(selectedImageId);
+  const hasOpenWindow = windows.length > 0;
 
   useEffect(() => {
     if (hasOpenWindow) return;
 
-    setAssistantExternalMessage({
+    setAssistantMessage({
       pt: "Todas as janelas foram fechadas. Minimalismo radical ou você só está me deixando sozinho?",
       en: "All windows are closed. Radical minimalism, or are you just leaving me alone?",
     });
-  }, [hasOpenWindow, setAssistantExternalMessage]);
+  }, [hasOpenWindow, setAssistantMessage]);
 
   useEffect(() => {
     if (hasOpenedInitialWindowRef.current) return;
@@ -230,11 +210,11 @@ export default function Home() {
   useEffect(() => {
     if (!areAllDesktopWindowsMinimized) return;
 
-    setAssistantExternalMessage(allMinimizedAssistantMessage);
+    setAssistantMessage(allMinimizedAssistantMessage);
   }, [
     allMinimizedAssistantMessage,
     areAllDesktopWindowsMinimized,
-    setAssistantExternalMessage,
+    setAssistantMessage,
   ]);
 
   useEffect(() => {
@@ -395,15 +375,15 @@ export default function Home() {
   };
 
   const handleShowAssistant = () => {
-    setActiveAssistantMessage(
+    setAssistantMessage(
       selectedAssistant.activationMessage ?? genericAssistantActivationMessage,
     );
-    showAssistant();
+    toggleAssistant();
     setAssistantContextMenuPosition(null);
   };
 
   const handleHideAssistantFromDesktop = () => {
-    requestHideAssistant();
+    toggleAssistant();
     setAssistantContextMenuPosition(null);
   };
 
@@ -444,10 +424,7 @@ export default function Home() {
           ))}
       </div>
 
-      <FloatingAssistant
-        externalMessage={assistantExternalMessage ?? undefined}
-        translateMessage={t}
-      />
+      <FloatingAssistant translateMessage={t} />
 
       {windows.map((windowItem) => (
         <RetroWindow
@@ -467,10 +444,6 @@ export default function Home() {
           {windowItem.content(t)}
         </RetroWindow>
       ))}
-
-      <ProjectPreviewWindow />
-
-      <ImagePreviewWindow />
 
       {assistantContextMenuPosition ? (
         <RetroMenu

@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { getWindowAssistantMessage } from "@/components/desktop/desktop-assistant-messages";
+import {
+  desktopMenuEasterEggMessage,
+  getWindowAssistantMessage,
+} from "@/components/desktop/desktop-assistant-messages";
 import { desktopApps } from "@/components/desktop/desktop-config";
 import type { DesktopAppConfig } from "@/components/desktop/types";
 import { TranslationButton } from "@/components/translation-button";
 import { useTranslation } from "@/hooks/use-translation";
-import { useDesktopStore } from "@/store/desktop-store";
+import { useAssistantStore } from "@/store/assistant-store";
 import { useWindowStore, type WindowInstance } from "@/store/window-store";
 
 export function Taskbar() {
@@ -12,11 +15,8 @@ export function Taskbar() {
   const windows = useWindowStore((state) => state.windows);
   const activeWindowId = useWindowStore((state) => state.activeWindowId);
   const openWindow = useWindowStore((state) => state.openWindow);
-  const setAssistantExternalMessage = useDesktopStore(
-    (state) => state.setAssistantExternalMessage,
-  );
-  const showDesktopMenuEasterEggMessage = useDesktopStore(
-    (state) => state.showDesktopMenuEasterEggMessage,
+  const setAssistantMessage = useAssistantStore(
+    (state) => state.setAssistantMessage,
   );
   const menuRef = useRef<HTMLDivElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -74,13 +74,13 @@ export function Taskbar() {
       defaultPosition: desktopApp.centerOnOpen ? undefined : desktopApp.position,
       sizePreset: desktopApp.sizePreset,
     });
-    setAssistantExternalMessage(getWindowAssistantMessage(desktopApp.id));
+    setAssistantMessage(getWindowAssistantMessage(desktopApp.id));
     setIsMenuOpen(false);
   };
 
   const handleTaskbarWindowSelect = (windowItem: WindowInstance) => {
     openWindow(windowItem);
-    setAssistantExternalMessage(getWindowAssistantMessage(windowItem.id));
+    setAssistantMessage(getWindowAssistantMessage(windowItem.id));
   };
 
   return (
@@ -117,7 +117,7 @@ export function Taskbar() {
                 type="button"
                 className="flex h-8 w-full items-center gap-2 px-2 text-left hover:bg-[#0b6f35] hover:text-white focus:bg-[#0b6f35] focus:text-white focus:outline-none"
                 onClick={() => {
-                  showDesktopMenuEasterEggMessage();
+                  setAssistantMessage(desktopMenuEasterEggMessage);
                   setIsMenuOpen(false);
                 }}
               >

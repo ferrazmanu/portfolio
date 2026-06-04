@@ -33,7 +33,6 @@ import { PixelDissolvePresence } from "./pixel-dissolve-presence";
 import { useRandomAssistantMessage } from "./use-random-assistant-message";
 
 interface FloatingAssistantProps {
-  externalMessage?: AssistantMessage;
   translateMessage: (message: AssistantMessage) => string;
 }
 
@@ -84,22 +83,18 @@ const useIsomorphicLayoutEffect =
   typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 export const FloatingAssistant = ({
-  externalMessage,
   translateMessage,
 }: FloatingAssistantProps) => {
   const activeMessage = useAssistantStore((state) => state.activeMessage);
-  const assistantHideRequestId = useAssistantStore(
-    (state) => state.assistantHideRequestId,
-  );
   const isAssistantHidden = useAssistantStore(
     (state) => state.isAssistantHidden,
   );
   const selectedAssistantId = useAssistantStore(
     (state) => state.selectedAssistantId,
   );
-  const hideAssistant = useAssistantStore((state) => state.hideAssistant);
-  const setActiveAssistantMessage = useAssistantStore(
-    (state) => state.setActiveAssistantMessage,
+  const toggleAssistant = useAssistantStore((state) => state.toggleAssistant);
+  const setAssistantMessage = useAssistantStore(
+    (state) => state.setAssistantMessage,
   );
   const setSelectedAssistantId = useAssistantStore(
     (state) => state.setSelectedAssistantId,
@@ -109,7 +104,6 @@ export const FloatingAssistant = ({
   const messageRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const dismissTimerRef = useRef<number | null>(null);
-  const lastHideRequestIdRef = useRef(assistantHideRequestId);
   const longPressTimerRef = useRef<number | null>(null);
   const shookDuringDragRef = useRef(false);
   const openedMenuFromLongPressRef = useRef(false);
@@ -299,13 +293,6 @@ export const FloatingAssistant = ({
     });
 
   useEffect(() => {
-    if (!externalMessage) return;
-
-    setActiveAssistantMessage(externalMessage);
-    setIsMessageCollapsed(false);
-  }, [externalMessage, setActiveAssistantMessage]);
-
-  useEffect(() => {
     setPokeCount(0);
   }, [selectedAssistantId]);
 
@@ -368,7 +355,7 @@ export const FloatingAssistant = ({
     setPokeCount((currentCount) => {
       const nextCount = currentCount + 1;
 
-      setActiveAssistantMessage(getPokeMessage(selectedAssistantId, nextCount));
+      setAssistantMessage(getPokeMessage(selectedAssistantId, nextCount));
       setIsMessageCollapsed(false);
 
       return nextCount;
@@ -384,7 +371,7 @@ export const FloatingAssistant = ({
   const startHideAssistant = useCallback(() => {
     if (isDismissing || isAssistantHidden) return;
 
-    setActiveAssistantMessage(
+    setAssistantMessage(
       selectedAssistant.farewellMessage ?? {
         pt: "Tudo bem. Vou sumir em pixels por um tempo.",
         en: "Fine. I will disappear into pixels for a while.",
@@ -396,24 +383,17 @@ export const FloatingAssistant = ({
     setIsDismissing(true);
 
     dismissTimerRef.current = window.setTimeout(() => {
-      hideAssistant();
+      toggleAssistant();
       setIsDismissing(false);
       dismissTimerRef.current = null;
     }, DISMISS_ANIMATION_DELAY);
   }, [
-    hideAssistant,
     isAssistantHidden,
     isDismissing,
     selectedAssistant.farewellMessage,
-    setActiveAssistantMessage,
+    setAssistantMessage,
+    toggleAssistant,
   ]);
-
-  useEffect(() => {
-    if (lastHideRequestIdRef.current === assistantHideRequestId) return;
-
-    lastHideRequestIdRef.current = assistantHideRequestId;
-    startHideAssistant();
-  }, [assistantHideRequestId, startHideAssistant]);
 
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     if (isDismissing) return;
@@ -514,7 +494,7 @@ export const FloatingAssistant = ({
         now - shakeTracker.firstDirectionChangeAt <= SHAKE_DIRECTION_WINDOW &&
         now - shakeTracker.lastMessageAt >= SHAKE_MESSAGE_COOLDOWN
       ) {
-        setActiveAssistantMessage(getRandomShakeMessage());
+        setAssistantMessage(getRandomShakeMessage());
         shookDuringDragRef.current = true;
         shakeTracker.directionChanges = 0;
         shakeTracker.firstDirectionChangeAt = 0;
@@ -551,7 +531,7 @@ export const FloatingAssistant = ({
       wasDraggedRef.current = false;
 
       if (!shookDuringDragRef.current) {
-        setActiveAssistantMessage(getRandomMoveMessage());
+        setAssistantMessage(getRandomMoveMessage());
       }
 
       shookDuringDragRef.current = false;
@@ -575,7 +555,7 @@ export const FloatingAssistant = ({
   };
 
   const handleAdviceClick = () => {
-    setActiveAssistantMessage(getRandomAdviceMessage());
+    setAssistantMessage(getRandomAdviceMessage());
     setIsMessageCollapsed(false);
     setIsMenuOpen(false);
   };
@@ -584,7 +564,7 @@ export const FloatingAssistant = ({
     const assistant = assistantCharactersById[assistantId];
 
     setSelectedAssistantId(assistantId);
-    setActiveAssistantMessage(
+    setAssistantMessage(
       assistant.activationMessage ?? genericAssistantActivationMessage,
     );
     setIsMessageCollapsed(false);

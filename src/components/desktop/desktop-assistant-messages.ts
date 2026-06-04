@@ -38,6 +38,14 @@ export const getWindowAssistantMessage = (id: WindowId): LocalizedText => {
       pt: "Bug Hunter.exe abriu em janela separada. Agora sim, caça aos bugs sem bagunçar a pasta.",
       en: "Bug Hunter.exe opened in a separate window. Now the bug hunt stays out of the folder.",
     },
+    projectPreview: {
+      pt: "Prévia de projeto em foco. Os pixels estão se comportando por enquanto.",
+      en: "Project preview focused. The pixels are behaving for now.",
+    },
+    imagePreview: {
+      pt: "Prévia de imagem em foco. Zoom mental ativado.",
+      en: "Image preview focused. Mental zoom enabled.",
+    },
     contact: {
       pt: "Contato aberto. Uma boa janela para chamar a Manu antes que eu mude de ideia.",
       en: "Contact opened. A good window to reach Manu before I change my mind.",

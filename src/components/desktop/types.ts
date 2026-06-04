@@ -13,6 +13,8 @@ export type WindowId =
   | "skills"
   | "games"
   | "bugHunter"
+  | "projectPreview"
+  | "imagePreview"
   | "contact"
   | "resume"
   | "trash";

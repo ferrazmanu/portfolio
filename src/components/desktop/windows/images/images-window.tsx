@@ -1,10 +1,19 @@
 import Image from "next/image";
 
-import { AudioIcon, FileIcon, VideoIcon } from "@/components/retro-icons";
-import { useDesktopStore } from "@/store/desktop-store";
+import { getImagePreviewAssistantMessage } from "@/components/desktop/desktop-assistant-messages";
+import { ImagePreviewContent } from "@/components/image-preview-content/image-preview-content";
+import {
+  AudioIcon,
+  FileIcon,
+  ImagesIcon,
+  VideoIcon,
+} from "@/components/retro-icons";
+import { useAssistantStore } from "@/store/assistant-store";
+import { useWindowStore } from "@/store/window-store";
 import type { TranslateFn } from "../../types";
 import {
   type ImagesWindowFileItem,
+  type ImagesWindowImageItem,
   imagesWindowItems,
   isImagesWindowImageItem,
 } from "./images-config";
@@ -27,7 +36,23 @@ const getFileTypeIcon = (item: ImagesWindowFileItem) => {
 };
 
 export function ImagesWindow({ t }: ImagesWindowProps) {
-  const openImagePreview = useDesktopStore((state) => state.openImagePreview);
+  const openWindow = useWindowStore((state) => state.openWindow);
+  const setAssistantMessage = useAssistantStore(
+    (state) => state.setAssistantMessage,
+  );
+
+  const handleOpenImagePreview = (item: ImagesWindowImageItem) => {
+    openWindow({
+      id: "imagePreview",
+      title: { pt: item.title, en: item.title },
+      icon: <ImagesIcon />,
+      content: (translate) => (
+        <ImagePreviewContent image={item} t={translate} />
+      ),
+      sizePreset: "lg",
+    });
+    setAssistantMessage(getImagePreviewAssistantMessage(item.title));
+  };
 
   return (
     <div className="space-y-3">
@@ -51,7 +76,7 @@ export function ImagesWindow({ t }: ImagesWindowProps) {
                 disabled={!isImage}
                 onClick={() => {
                   if (isImage) {
-                    openImagePreview(item.id);
+                    handleOpenImagePreview(item);
                   }
                 }}
               >

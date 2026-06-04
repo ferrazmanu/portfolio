@@ -1,19 +1,37 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { getProjectPreviewAssistantMessage } from "@/components/desktop/desktop-assistant-messages";
+import { ProjectsIcon } from "@/components/retro-icons";
 import { PROJECTS_DATA } from "@/data/projects";
-import { useDesktopStore } from "@/store/desktop-store";
+import { useAssistantStore } from "@/store/assistant-store";
+import { useWindowStore } from "@/store/window-store";
 
 import type { TranslateFn } from "../../types";
+import { ProjectPreviewContent } from "./project-preview-content";
 
 interface ProjectListWindowProps {
   t: TranslateFn;
 }
 
 export function ProjectListWindow({ t }: ProjectListWindowProps) {
-  const openProjectPreview = useDesktopStore(
-    (state) => state.openProjectPreview,
+  const openWindow = useWindowStore((state) => state.openWindow);
+  const setAssistantMessage = useAssistantStore(
+    (state) => state.setAssistantMessage,
   );
+
+  const handleOpenProjectPreview = (project: (typeof PROJECTS_DATA)[number]) => {
+    openWindow({
+      id: "projectPreview",
+      title: { pt: `${project.name}.png`, en: `${project.name}.png` },
+      icon: <ProjectsIcon />,
+      content: (translate) => (
+        <ProjectPreviewContent project={project} t={translate} />
+      ),
+      sizePreset: "lg",
+    });
+    setAssistantMessage(getProjectPreviewAssistantMessage(project.name));
+  };
 
   return (
     <div className="space-y-3">
@@ -37,7 +55,7 @@ export function ProjectListWindow({ t }: ProjectListWindowProps) {
               pt: "Abrir imagem do projeto",
               en: "Open project image",
             })} ${project.name}`}
-            onClick={() => openProjectPreview(project.name)}
+            onClick={() => handleOpenProjectPreview(project)}
           >
             <Image
               src={project.imageUrl}
