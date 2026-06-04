@@ -30,6 +30,7 @@ const BASE_BUG_LIFETIME = 1700;
 const MIN_BUG_LIFETIME = 650;
 const RARE_BUG_CHANCE = 0.16;
 const BEST_SCORE_STORAGE_KEY = "bug-hunter-best-score";
+const LAST_SCORE_STORAGE_KEY = "bug-hunter-last-score";
 const SECRET_ACHIEVEMENT_STORAGE_KEY = "bug-hunter-secret-achievement";
 const BUG_NAMES = [
   "NullPointer",
@@ -91,6 +92,7 @@ export function useBugHunter() {
   const [bugs, setBugs] = useState<BugTarget[]>([]);
   const [hitMessages, setHitMessages] = useState<HitMessage[]>([]);
   const [bestScore, setBestScore] = useState(0);
+  const [lastScore, setLastScore] = useState(0);
   const [hasSecretAchievement, setHasSecretAchievement] = useState(false);
   const spawnAreaRef = useRef<HTMLDivElement>(null);
   const bugTimeoutsRef = useRef<Record<string, number>>({});
@@ -169,14 +171,20 @@ export function useBugHunter() {
 
   useEffect(() => {
     const storedBestScore = window.localStorage.getItem(BEST_SCORE_STORAGE_KEY);
+    const storedLastScore = window.localStorage.getItem(LAST_SCORE_STORAGE_KEY);
     const storedAchievement = window.localStorage.getItem(
       SECRET_ACHIEVEMENT_STORAGE_KEY,
     );
 
     const parsedBestScore = Number(storedBestScore);
+    const parsedLastScore = Number(storedLastScore);
 
     if (Number.isFinite(parsedBestScore)) {
       setBestScore(parsedBestScore);
+    }
+
+    if (Number.isFinite(parsedLastScore)) {
+      setLastScore(parsedLastScore);
     }
 
     setHasSecretAchievement(storedAchievement === "true");
@@ -223,6 +231,9 @@ export function useBugHunter() {
   useEffect(() => {
     if (status !== "over") return;
 
+    window.localStorage.setItem(LAST_SCORE_STORAGE_KEY, String(score));
+    setLastScore(score);
+
     setBestScore((currentBestScore) => {
       const nextBestScore = Math.max(currentBestScore, score);
       window.localStorage.setItem(
@@ -248,6 +259,7 @@ export function useBugHunter() {
     captureBug,
     hasSecretAchievement,
     hitMessages,
+    lastScore,
     ranking,
     score,
     spawnAreaRef,

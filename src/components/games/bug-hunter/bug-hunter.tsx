@@ -11,6 +11,7 @@ export function BugHunter() {
     captureBug,
     hasSecretAchievement,
     hitMessages,
+    lastScore,
     ranking,
     score,
     spawnAreaRef,
@@ -39,6 +40,7 @@ export function BugHunter() {
       <ScoreBoard
         bestScore={bestScore}
         bugsFixed={bugsFixed}
+        lastScore={lastScore}
         score={score}
         timeLeft={timeLeft}
       />

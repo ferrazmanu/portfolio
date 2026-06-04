@@ -3,6 +3,7 @@ interface ScoreBoardProps {
   timeLeft: number;
   bugsFixed: number;
   bestScore: number;
+  lastScore: number;
 }
 
 export function ScoreBoard({
@@ -10,9 +11,10 @@ export function ScoreBoard({
   timeLeft,
   bugsFixed,
   bestScore,
+  lastScore,
 }: ScoreBoardProps) {
   return (
-    <div className="grid grid-cols-2 gap-2 text-[11px] text-[#bcffcb] sm:grid-cols-4">
+    <div className="grid grid-cols-2 gap-2 text-[11px] text-[#bcffcb] sm:grid-cols-5">
       <div className="retro-border-inset bg-[#020f08] p-2">
         <p className="text-[#5cff84]">Tempo</p>
         <strong className="text-base text-white">{timeLeft}s</strong>
@@ -28,6 +30,10 @@ export function ScoreBoard({
       <div className="retro-border-inset bg-[#020f08] p-2">
         <p className="text-[#5cff84]">Recorde</p>
         <strong className="text-base text-white">{bestScore}</strong>
+      </div>
+      <div className="retro-border-inset bg-[#020f08] p-2">
+        <p className="text-[#5cff84]">Última</p>
+        <strong className="text-base text-white">{lastScore}</strong>
       </div>
     </div>
   );
