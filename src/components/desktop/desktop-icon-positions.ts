@@ -13,6 +13,7 @@ export const initialIconPositions: Record<WindowId, DesktopIconPosition> = {
   stackSnake: { x: 0, y: 0 },
   projectPreview: { x: 0, y: 0 },
   imagePreview: { x: 0, y: 0 },
+  resumePreview: { x: 0, y: 0 },
   contact: { x: 940, y: 238 },
   resume: { x: 418, y: 398 },
   trash: { x: 900, y: 400 },

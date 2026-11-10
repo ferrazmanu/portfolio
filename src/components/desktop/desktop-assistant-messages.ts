@@ -50,6 +50,10 @@ export const getWindowAssistantMessage = (id: WindowId): LocalizedText => {
       pt: "Prévia de imagem em foco. Zoom mental ativado.",
       en: "Image preview focused. Mental zoom enabled.",
     },
+    resumePreview: {
+      pt: "Visualizador de PDF aberto. Sem pop-ups ou abas extras.",
+      en: "PDF viewer opened. No popups or extra tabs.",
+    },
     contact: {
       pt: "Contato aberto. Uma boa janela para chamar a Manu antes que eu mude de ideia.",
       en: "Contact opened. A good window to reach Manu before I change my mind.",

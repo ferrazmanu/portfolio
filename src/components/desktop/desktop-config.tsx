@@ -96,11 +96,11 @@ export const desktopApps: DesktopAppConfig[] = [
     id: "resume",
     title: { pt: "Currículo", en: "Resume" },
     label: { pt: "Currículo", en: "Resume" },
-    icon: <ResumeIcon />,
+    icon: <FolderIcon label="CV" />,
     content: (t) => <ResumeWindow t={t} />,
     iconPosition: { x: 418, y: 398 },
     position: { x: 160, y: 210 },
-    sizePreset: "xs",
+    sizePreset: "sm",
   },
   {
     id: "trash",

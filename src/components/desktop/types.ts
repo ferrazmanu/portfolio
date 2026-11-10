@@ -16,6 +16,7 @@ export type WindowId =
   | "stackSnake"
   | "projectPreview"
   | "imagePreview"
+  | "resumePreview"
   | "contact"
   | "resume"
   | "trash";
